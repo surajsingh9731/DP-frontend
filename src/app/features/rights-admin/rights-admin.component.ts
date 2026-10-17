@@ -27,6 +27,7 @@ import { FollowupsApi } from '../../core/followups-api.service';
 import { RightsCopy } from '../../core/rights/rights-copy.service';
 import type { RightsTextKey } from '../../core/rights/rights.en';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { storedActionKey } from '../../core/commands/stored-action-key';
 import { syntheticEvidenceReferences } from '../../core/forms/synthetic-evidence';
 import {
@@ -37,7 +38,13 @@ import {
 import { rightsActionForm, rightsActions } from './rights-admin.forms';
 @Component({
   selector: 'app-rights-admin',
-  imports: [DatePipe, ReactiveFormsModule, RouterLink, DisplayPreferencesComponent],
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    RouterLink,
+    DisplayPreferencesComponent,
+    StatusBannerComponent,
+  ],
   templateUrl: './rights-admin.component.html',
   styleUrl: './rights-admin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

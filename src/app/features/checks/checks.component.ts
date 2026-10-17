@@ -30,6 +30,7 @@ import { ChecksApi } from '../../core/checks-api.service';
 import { FollowupsApi } from '../../core/followups-api.service';
 import { I18n } from '../../core/i18n.service';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { storedActionKey } from '../../core/commands/stored-action-key';
 import { syntheticEvidenceReferences } from '../../core/forms/synthetic-evidence';
 import {
@@ -43,7 +44,13 @@ import { CHECKS_EN, CHECK_REASONS_EN, type ChecksTextKey } from './checks.en';
 import { CHECKS_HI, CHECK_REASONS_HI } from './checks.hi';
 @Component({
   selector: 'app-checks',
-  imports: [DatePipe, ReactiveFormsModule, RouterLink, DisplayPreferencesComponent],
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    RouterLink,
+    DisplayPreferencesComponent,
+    StatusBannerComponent,
+  ],
   templateUrl: './checks.component.html',
   styleUrl: './checks.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

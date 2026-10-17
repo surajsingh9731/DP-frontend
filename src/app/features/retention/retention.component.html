@@ -6,8 +6,12 @@
   <h1>{{ copy.t('title') }}</h1>
   <p class="warning">{{ copy.t('intro') }}</p>
   <p>{{ copy.t('scope') }}</p>
-  <p role="alert">{{ copy.message(error()) }}</p>
-  <p role="status">{{ copy.message(status()) }} {{ loading() ? copy.t('loading') : '' }}</p>
+  <app-status-banner
+    [errorText]="copy.message(error())"
+    [statusText]="copy.message(status())"
+    [loading]="loading()"
+    [loadingText]="copy.t('loading')"
+  />
   <label for="retention-activity">{{ copy.t('activity') }}</label
   ><select id="retention-activity" [formControl]="activity" [disabled]="busy() || loading()">
     <option value="">{{ copy.t('choose') }}</option>

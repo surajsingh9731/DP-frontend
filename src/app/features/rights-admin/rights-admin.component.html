@@ -5,8 +5,12 @@
   </header>
   <h1>{{ copy.t('triageTitle') }}</h1>
   <p class="warning">{{ copy.t('intro') }}</p>
-  <p role="alert">{{ copy.message(error()) }}</p>
-  <p role="status">{{ copy.message(status()) }} {{ loading() ? copy.t('loading') : '' }}</p>
+  <app-status-banner
+    [errorText]="copy.message(error())"
+    [statusText]="copy.message(status())"
+    [loading]="loading()"
+    [loadingText]="copy.t('loading')"
+  />
   <button
     type="button"
     class="button button--secondary"

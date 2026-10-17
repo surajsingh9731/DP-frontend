@@ -29,6 +29,7 @@ import { Api } from '../../core/api.service';
 import { RegisterApi } from '../../core/register-api.service';
 import { RetentionApi, type RetentionSavedPreview } from '../../core/retention-api.service';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { storedActionKey } from '../../core/commands/stored-action-key';
 import { RETENTION_KEY_PREFIX, RETENTION_HOLD_SCOPES } from '../../constants/retention.constants';
 import { RetentionCopy } from './retention-copy.service';
@@ -48,6 +49,7 @@ import { RetentionPreviewComponent } from './retention-preview.component';
     RouterLink,
     DisplayPreferencesComponent,
     RetentionPreviewComponent,
+    StatusBannerComponent,
   ],
   templateUrl: './retention.component.html',
   styleUrl: './retention.component.scss',
