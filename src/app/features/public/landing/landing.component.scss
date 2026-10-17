@@ -2,8 +2,9 @@
   display: block;
 }
 
-// `.button` and its variants are defined globally in src/styles/_buttons.scss
-// so this page and `coming-soon.component` share one implementation (DRY).
+// `.button` and its variants, and `.tricolor-strip`, are defined globally in
+// src/styles/_buttons.scss so this page and `coming-soon.component` share one
+// implementation (DRY).
 
 .section-heading {
   font-size: var(--font-size-2xl);
@@ -13,38 +14,40 @@
 .section-subheading {
   color: var(--color-ink-700);
   max-width: 42rem;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-10);
 }
 
 // ---- Hero -----------------------------------------------------------------
 .hero {
-  padding: var(--space-8) 0 var(--space-12);
+  padding: var(--space-10) 0 var(--space-16);
   text-align: left;
 }
 
 .hero__eyebrow {
   display: inline-block;
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--space-4);
   background: var(--color-primary-100);
   color: var(--color-primary-900);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-pill);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
 .hero__heading {
-  font-size: var(--font-size-3xl);
+  font-size: clamp(2.25rem, 5vw, var(--font-size-4xl));
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.01em;
   color: var(--color-ink-900);
-  max-width: 44rem;
-  margin-bottom: var(--space-4);
+  max-width: 46rem;
+  margin-bottom: var(--space-6);
 }
 
 .hero__subheading {
   font-size: var(--font-size-lg);
   color: var(--color-ink-700);
   max-width: 40rem;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
 }
 
 .hero__ctas {
@@ -52,7 +55,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-4);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-10);
 }
 
 .hero__secondary {
@@ -83,15 +86,52 @@
   color: var(--color-success-700);
 }
 
+// ---- Stats band -------------------------------------------------------
+// Dark navy band (official Ashoka Chakra blue) echoing the credibility-band
+// pattern of modern compliance-SaaS pages, but with honest product facts
+// rather than fabricated customer/usage numbers.
+.stats-band {
+  margin: 0 calc(var(--space-4) * -1);
+  padding: var(--space-10) var(--space-4);
+  background: var(--color-primary-900);
+  border-radius: var(--radius-lg);
+}
+
+.stats-band__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+
+  @media (min-width: 40rem) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.stats-band__value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-extrabold);
+  color: #fff;
+  margin-bottom: var(--space-2);
+}
+
+.stats-band__label {
+  color: var(--color-primary-100);
+  font-size: var(--font-size-sm);
+}
+
 // ---- Modules ----------------------------------------------------------
 .modules {
-  padding: var(--space-12) 0;
+  padding: var(--space-20) 0 var(--space-16);
 }
 
 .modules__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-4);
+  gap: var(--space-5);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -111,22 +151,62 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--motion-duration) var(--motion-easing),
+    transform var(--motion-duration) var(--motion-easing);
+
+  &:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
 }
 
 .module-card__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-bottom: var(--space-3);
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: var(--space-4);
   border-radius: var(--radius-md);
-  background: var(--color-primary-100);
-  color: var(--color-primary-900);
 
   svg {
-    width: 1.4rem;
-    height: 1.4rem;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  // Each module gets a distinct, already-contrast-verified color family
+  // (see MODULE_TONE in landing.component.ts) purely for visual variety —
+  // every module title/description stays plain ink text, so the tone never
+  // carries the only signal for anything that matters (plan priority #10).
+  &[data-tone='primary'] {
+    background: var(--color-primary-100);
+    color: var(--color-primary-700);
+  }
+
+  &[data-tone='violet'] {
+    background: var(--color-primary-100);
+    color: var(--color-primary-500);
+  }
+
+  &[data-tone='navy'] {
+    background: var(--color-primary-100);
+    color: var(--color-primary-900);
+  }
+
+  &[data-tone='success'] {
+    background: var(--color-success-100);
+    color: var(--color-success-700);
+  }
+
+  &[data-tone='warning'] {
+    background: var(--color-warning-100);
+    color: var(--color-warning-700);
+  }
+
+  &[data-tone='danger'] {
+    background: var(--color-danger-100);
+    color: var(--color-danger-700);
   }
 }
 
@@ -141,13 +221,13 @@
 
 // ---- Audience -----------------------------------------------------------
 .audience {
-  padding: var(--space-12) 0;
+  padding: var(--space-16) 0;
 }
 
 .audience__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-4);
+  gap: var(--space-5);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -161,6 +241,7 @@
   padding: var(--space-6);
   background: var(--color-surface-alt);
   border-radius: var(--radius-lg);
+  border-top: 3px solid var(--color-primary-500);
 }
 
 .audience-card__title {
@@ -174,12 +255,31 @@
 
 // ---- Closing CTA ----------------------------------------------------------
 .closing {
-  margin: var(--space-8) 0 var(--space-4);
-  padding: var(--space-12) var(--space-6);
-  background: var(--color-primary-700);
+  position: relative;
+  margin: var(--space-10) calc(var(--space-4) * -1) var(--space-4);
+  padding: var(--space-16) var(--space-6);
+  background: var(--color-primary-900);
   border-radius: var(--radius-lg);
   color: #fff;
   text-align: center;
+  overflow: hidden;
+}
+
+.closing__tricolor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--color-tricolor-saffron) 0%,
+    var(--color-tricolor-saffron) 33%,
+    var(--color-tricolor-white) 33%,
+    var(--color-tricolor-white) 66%,
+    var(--color-tricolor-green) 66%,
+    var(--color-tricolor-green) 100%
+  );
 }
 
 .closing__heading {
@@ -189,9 +289,9 @@
 }
 
 .closing__body {
-  color: #fff;
+  color: var(--color-primary-100);
   max-width: 36rem;
-  margin: 0 auto var(--space-6);
+  margin: 0 auto var(--space-8);
 }
 
 .closing__ctas {
@@ -216,10 +316,12 @@
   }
 }
 
-// The default focus ring color (--color-primary-900) only reaches ~1.4:1
-// against this section's primary-700 background, which fails the WCAG
-// 1.4.11 non-text contrast floor (3:1) — override to white here, which
-// clears 10:1 against primary-700 (see the accessibility checklist doc).
-.closing :focus-visible {
+// The default focus ring color (--color-primary-900) would be invisible
+// against this section's own primary-900 background (same color = ~1:1
+// contrast). Both the stats band and the closing band override to white,
+// which clears 14.9:1 against primary-900 (see the accessibility checklist
+// doc) — comfortably past the WCAG 1.4.11 non-text contrast floor (3:1).
+.closing :focus-visible,
+.stats-band :focus-visible {
   outline-color: #fff;
 }

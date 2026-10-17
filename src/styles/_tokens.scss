@@ -1,35 +1,81 @@
-// Sahmati design tokens — UX4G-aligned (gov.in visual language), judgment-based
-// (see docs/architecture/R1-ui-ux-plan.md §2/§6: no design-system search tool
-// was available in this environment, so these are hand-built per the plan's
-// priority table, not a retrieved UX4G component match).
+// Sahmati design tokens — v2, anchored on real sources rather than an
+// invented "GIGW-safe" guess (see the redesign note in
+// docs/architecture/landing-page-accessibility-checklist.md for exactly
+// where each color comes from and why).
 //
-// Every text/background pair below was verified against WCAG 2.1 contrast
-// math (see docs/architecture/landing-page-accessibility-checklist.md for
-// the computed ratios) rather than assumed — the plan flags some gov design
-// system defaults (amber/warning especially) as AA-borderline, so nothing
-// here is used unverified.
+// Primary ramp provenance:
+//   --color-primary-900  #06038D  the Ashoka Chakra navy blue from India's
+//                                 own official flag colour codes (Bureau of
+//                                 Indian Standards / Pantone reference used
+//                                 by flagcolorcodes.com) — this session's
+//                                 network policy blocks a direct fetch of
+//                                 india.gov.in itself (confirmed: every
+//                                 outbound host, including google.com,
+//                                 returns a 403 policy denial here, not a
+//                                 DNS fluke), so the *official government
+//                                 colour code* is the closest verifiable
+//                                 anchor to "india.gov.in's coloring" this
+//                                 environment allows.
+//   --color-primary-700  #2E2A8C  an indigo bridging that navy with the
+//                                 existing Sahmati logo's violet (below) —
+//                                 deliberately chosen so the restored brand
+//                                 mark and the page read as one family
+//                                 instead of clashing.
+//   --color-primary-500  #5434B8  the EXACT fill color already used in
+//                                 public/brand/logo.svg / mark.svg — reused
+//                                 directly as a UI accent rather than
+//                                 invented separately.
+//   --color-success-700  #046A38  India's official flag green, used as-is
+//                                 (6.72:1 on white — no darkening needed).
+//   --color-warning-700  #8A4300  derived by darkening the official India
+//                                 Saffron hue (#FF671F, 2.91:1 on white —
+//                                 fails even the relaxed 3:1 icon floor) to
+//                                 a shade that clears 4.5:1 for text. The
+//                                 undarkened saffron is still used, but only
+//                                 as a purely decorative tricolor strip
+//                                 (`.tricolor-strip`) that carries no text
+//                                 or icon meaning, so WCAG's contrast rule
+//                                 doesn't apply to it.
+//   --color-danger-700    #B3261E  landed independently on nearly the same
+//                                 value as the official UX4G design system's
+//                                 own `--ux4g-color-red-700` (#b3251e,
+//                                 confirmed by downloading the real
+//                                 `ux4g-web-components` npm package and
+//                                 reading its published CSS token file,
+//                                 since registry.npmjs.org is allow-listed
+//                                 for this session even though general web
+//                                 browsing is not) — kept as-is.
+//
+// Every pair actually used below was verified against the WCAG contrast
+// formula; see the accessibility checklist doc for the full table.
 
 :root {
   // ---- Color: neutrals / ink ----------------------------------------
   --color-ink-900: #1a1a2e; // primary text — 17.1:1 on surface
   --color-ink-700: #44475a; // secondary text — 9.2:1 on surface
-  --color-border: #d7dbe3;
+  --color-border: #ddd9ee;
   --color-surface: #ffffff;
-  --color-surface-alt: #f4f6fb; // section backgrounds, cards
+  --color-surface-alt: #f6f5fb; // section backgrounds, cards — subtle lavender, matches the indigo primary family
 
-  // ---- Color: primary (UX4G government blue) ------------------------
-  --color-primary-900: #072a66; // hover/active state
-  --color-primary-700: #0b3d91; // base — 10.0:1 on white
-  --color-primary-100: #d7e9ff; // tint background for info/primary chips
+  // ---- Color: primary (GOI-anchored indigo/navy, see provenance above) --
+  --color-primary-900: #06038d; // official Ashoka Chakra navy — dark bands, header
+  --color-primary-700: #2e2a8c; // navy↔logo-violet bridge — buttons, links
+  --color-primary-500: #5434b8; // = exact logo.svg fill — accents, active states
+  --color-primary-100: #e9e6fb; // tint background for chips/cards
+
+  // Official, undarkened tricolor — decorative only, never text/icon meaning.
+  --color-tricolor-saffron: #ff671f;
+  --color-tricolor-white: #ffffff;
+  --color-tricolor-green: #046a38;
 
   // ---- Color: semantic status (never used color-alone; always + icon/text) --
-  --color-success-700: #146c33; // 6.5:1 on white, 5.7:1 on success-100
-  --color-success-100: #e3f3e8;
+  --color-success-700: #046a38; // official India Green — 6.7:1 on white
+  --color-success-100: #e1f3e8;
 
-  --color-warning-700: #8a5800; // 6.0:1 on white, 5.5:1 on warning-100
-  --color-warning-100: #fff3d6;
+  --color-warning-700: #8a4300; // darkened India Saffron — 7.3:1 on white
+  --color-warning-100: #fff0e3;
 
-  --color-danger-700: #b3261e; // 6.5:1 on white, 5.4:1 on danger-100
+  --color-danger-700: #b3261e; // ≈ official UX4G red-700 (#b3251e) — 6.5:1 on white
   --color-danger-100: #fbe4e1;
 
   --color-info-700: var(--color-primary-700);
@@ -43,40 +89,47 @@
   --font-size-base: 16px; // GIGW/WCAG floor — never smaller for body text
   --font-size-sm: 0.875rem; // 14px — captions/meta only, never body copy
   --font-size-md: 1rem; // 16px
-  --font-size-lg: 1.125rem; // 18px
-  --font-size-xl: 1.375rem; // 22px
-  --font-size-2xl: 1.75rem; // 28px
-  --font-size-3xl: 2.25rem; // 36px
+  --font-size-lg: 1.25rem; // 20px
+  --font-size-xl: 1.5rem; // 24px
+  --font-size-2xl: 2rem; // 32px
+  --font-size-3xl: 2.75rem; // 44px
+  --font-size-4xl: 3.25rem; // 52px — hero headline, desktop
 
   // 1.5 is the WCAG 1.4.12 floor and the plan's own figure for Hindi
   // line-wrapping; Devanagari conjuncts need the extra vertical room.
   --line-height-base: 1.5;
-  --line-height-heading: 1.25;
+  --line-height-heading: 1.15;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
 
   // Scales body text up for the public shell's text-size toggle
   // (brief §13.5 "large-text mode" for parent/public users on small phones).
   --text-scale: 1;
 
-  // ---- Spacing (4px base scale) ---------------------------------------
+  // ---- Spacing (4px base scale, extended for a marketing-page rhythm) --
   --space-1: 0.25rem; // 4px
   --space-2: 0.5rem; // 8px
   --space-3: 0.75rem; // 12px
   --space-4: 1rem; // 16px
   --space-6: 1.5rem; // 24px
   --space-8: 2rem; // 32px
+  --space-10: 2.5rem; // 40px
   --space-12: 3rem; // 48px
   --space-16: 4rem; // 64px
+  --space-20: 5rem; // 80px
+  --space-24: 6rem; // 96px
 
   // ---- Shape / elevation ------------------------------------------------
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
-  --shadow-card: 0 1px 2px rgba(26, 26, 46, 0.06), 0 2px 8px rgba(26, 26, 46, 0.08);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1.125rem;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(6, 3, 141, 0.05), 0 4px 16px rgba(6, 3, 141, 0.08);
+  --shadow-card-hover: 0 4px 10px rgba(6, 3, 141, 0.08), 0 12px 28px rgba(6, 3, 141, 0.14);
 
   // ---- Interaction ------------------------------------------------------
   // GIGW/WCAG touch target floor (plan's priority #2): every control uses
@@ -88,8 +141,8 @@
   // Motion: informational only, never decorative (plan priority #7).
   // `--motion-duration` collapses to near-zero when a viewer's OS or the
   // in-app reduce-motion toggle (public shell) asks for it.
-  --motion-duration: 180ms;
-  --motion-easing: ease-in-out;
+  --motion-duration: 200ms;
+  --motion-easing: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

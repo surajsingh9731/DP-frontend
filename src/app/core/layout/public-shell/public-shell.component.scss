@@ -10,17 +10,22 @@
 }
 
 .public-shell__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+.public-shell__bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
 }
 
 .public-shell__bar-start,
@@ -29,6 +34,19 @@
   align-items: center;
   gap: var(--space-3);
   min-height: var(--touch-target-min);
+}
+
+.public-shell__brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target-min);
+  padding: var(--space-1) 0;
+  border-radius: var(--radius-sm);
+
+  img {
+    height: 1.8rem;
+    width: auto;
+  }
 }
 
 .public-shell__back {

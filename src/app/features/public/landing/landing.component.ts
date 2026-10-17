@@ -2,15 +2,22 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink } from '@angular/router';
 import { LanguageService } from '../../../core/services/language.service';
 
+type ModuleIcon = 'register' | 'notice' | 'consent' | 'rights' | 'breach' | 'retention';
+
 interface ModuleCard {
   readonly title: string;
   readonly description: string;
-  readonly icon: 'register' | 'notice' | 'consent' | 'rights' | 'breach' | 'retention';
+  readonly icon: ModuleIcon;
 }
 
 interface AudienceCard {
   readonly title: string;
   readonly description: string;
+}
+
+interface Stat {
+  readonly value: string;
+  readonly label: string;
 }
 
 interface LandingCopy {
@@ -21,6 +28,7 @@ interface LandingCopy {
   readonly ctaSecondaryLead: string;
   readonly ctaSecondaryAction: string;
   readonly trustStrip: readonly string[];
+  readonly stats: readonly Stat[];
   readonly modulesHeading: string;
   readonly modulesSubheading: string;
   readonly modules: readonly ModuleCard[];
@@ -29,6 +37,23 @@ interface LandingCopy {
   readonly closingHeading: string;
   readonly closingBody: string;
 }
+
+/**
+ * Visual "tone" per module icon — a different, already-contrast-verified
+ * color family per card so the module grid reads with the kind of visual
+ * variety a modern compliance-SaaS page uses (per the Sprinto reference),
+ * without introducing any color not already defined and checked in
+ * src/styles/_tokens.scss. Language-independent, so it lives outside the
+ * EN/HI copy objects.
+ */
+const MODULE_TONE: Record<ModuleIcon, string> = {
+  register: 'primary',
+  notice: 'violet',
+  consent: 'success',
+  rights: 'warning',
+  breach: 'danger',
+  retention: 'navy',
+};
 
 /**
  * Public marketing/informational landing page. Real, hand-written static
@@ -52,6 +77,10 @@ export class LandingComponent {
     this.language() === 'hi' ? this.hiCopy : this.enCopy,
   );
 
+  moduleTone(icon: ModuleIcon): string {
+    return MODULE_TONE[icon];
+  }
+
   private readonly enCopy: LandingCopy = {
     eyebrow: 'Built for India · DPDP Act, 2023',
     heading: 'Data protection compliance for schools and coaching centres',
@@ -64,6 +93,11 @@ export class LandingComponent {
       'GIGW 3.0 & WCAG 2.1 AA accessible',
       'Available in Hindi and English',
       'Built for Indian schools and coaching centres',
+    ],
+    stats: [
+      { value: '6', label: 'compliance modules, end to end' },
+      { value: '2', label: 'languages — Hindi and English' },
+      { value: 'AA', label: 'WCAG 2.1 accessibility target' },
     ],
     modulesHeading: 'What Sahmati does',
     modulesSubheading:
@@ -140,6 +174,11 @@ export class LandingComponent {
       'GIGW 3.0 और WCAG 2.1 AA सुलभ',
       'हिन्दी और अंग्रेज़ी में उपलब्ध',
       'भारतीय स्कूलों और कोचिंग सेंटरों के लिए निर्मित',
+    ],
+    stats: [
+      { value: '6', label: 'अनुपालन मॉड्यूल, पूरी तरह से' },
+      { value: '2', label: 'भाषाएं — हिन्दी और अंग्रेज़ी' },
+      { value: 'AA', label: 'WCAG 2.1 सुलभता लक्ष्य' },
     ],
     modulesHeading: 'सहमति क्या करती है',
     modulesSubheading:

@@ -1,0 +1,13 @@
+{
+  "name": "Sahmati",
+  "short_name": "Sahmati",
+  "description": "DPDP Act, 2023 compliance for Indian schools and coaching centres.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#06038d",
+  "icons": [
+    { "src": "brand/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "brand/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
