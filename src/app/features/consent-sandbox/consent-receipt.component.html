@@ -1,0 +1,49 @@
+<article class="receipt">
+  <h3>{{ t('receipt') }} · {{ t('version') }} {{ receipt().version }}</h3>
+  <p>
+    {{ receipt().syntheticReference }} ·
+    {{ t(receipt().kind === 'choices_recorded' ? 'recorded' : 'withdrawn') }}
+  </p>
+  <time [attr.datetime]="receipt().occurredAt">{{
+    receipt().occurredAt | date: 'medium' : undefined : i.locale()
+  }}</time>
+  <p>{{ t('assurance') }}</p>
+  <dl>
+    <dt>ID</dt>
+    <dd>{{ receipt().id }}</dd>
+    <dt>{{ t('notice') }}</dt>
+    <dd>
+      {{ receipt().offer.notice.id }} · {{ receipt().offer.notice.language }} ·
+      {{ t('registerVersion') }}
+      {{ receipt().offer.notice.entryVersion }}
+    </dd>
+    <dt>{{ t('catalogVersion') }}</dt>
+    <dd>{{ receipt().offer.version }} · {{ receipt().offer.catalogHash }}</dd>
+    <dt>{{ t('interfaceLanguage') }}</dt>
+    <dd>{{ receipt().interfaceLanguage }}</dd>
+  </dl>
+  <ul>
+    @for (choice of receipt().choices; track choice.purposeId) {
+      <li>
+        {{ label(choice.purposeId) }}: <strong>{{ t(choice.decision) }}</strong>
+      </li>
+    }
+  </ul>
+  <details>
+    <summary>{{ t('notice') }} · {{ receipt().offer.notice.language }}</summary>
+    <div [attr.lang]="receipt().offer.notice.language">
+      <h4>{{ receipt().offer.notice.title }}</h4>
+      <p>{{ receipt().offer.notice.warning }}</p>
+      <pre>{{ receipt().offer.notice.body }}</pre>
+    </div>
+  </details>
+  <dl>
+    <dt>{{ t('hash') }}</dt>
+    <dd>{{ receipt().receiptHash }}</dd>
+    @if (receipt().previousReceiptHash) {
+      <dt>{{ t('previous') }}</dt>
+      <dd>{{ receipt().previousReceiptHash }}</dd>
+    }
+  </dl>
+  <p>{{ t('deletion') }}</p>
+</article>

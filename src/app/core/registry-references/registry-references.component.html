@@ -1,0 +1,124 @@
+<section class="references" [formGroup]="form()" aria-labelledby="references-title">
+  <h3 id="references-title">{{ t('title') }}</h3>
+  <p class="muted">{{ t('warning') }}</p>
+  <p class="field-hint">{{ t('limit') }}</p>
+  <h4>{{ t('vendors') }}</h4>
+  <div formArrayName="vendorReferences">
+    @for (row of form().controls.vendorReferences.controls; track row; let index = $index) {
+      <fieldset [formGroupName]="index" [disabled]="busy()">
+        <legend>{{ t('vendors') }} {{ index + 1 }}</legend>
+        <label [for]="'vendor-name-' + index">{{ t('name') }}</label
+        ><input
+          #vendorName
+          [id]="'vendor-name-' + index"
+          formControlName="name"
+          [readOnly]="readOnly()"
+          [maxlength]="limits.name"
+        /><label [for]="'vendor-service-' + index">{{ t('service') }}</label
+        ><input
+          [id]="'vendor-service-' + index"
+          formControlName="service"
+          [readOnly]="readOnly()"
+          [maxlength]="limits.detail"
+        />
+        @if (!readOnly()) {
+          <button
+            class="button button--quiet"
+            type="button"
+            (click)="remove('vendor', index)"
+            [disabled]="busy()"
+            [attr.aria-label]="t('remove') + ' ' + t('vendors') + ' ' + (index + 1)"
+          >
+            {{ t('remove') }}
+          </button>
+        }
+      </fieldset>
+    }
+  </div>
+  @if (form().controls.vendorReferences.length === 0) {
+    <p>{{ t('none') }}</p>
+  }
+  @if (!readOnly()) {
+    <button
+      type="button"
+      class="button button--secondary"
+      #addVendorButton
+      (click)="add('vendor')"
+      [disabled]="busy() || form().controls.vendorReferences.length >= limits.count"
+    >
+      {{ t('addVendor') }}
+    </button>
+  }
+  <h4>{{ t('storage') }}</h4>
+  <div formArrayName="storageReferences">
+    @for (row of form().controls.storageReferences.controls; track row; let index = $index) {
+      <fieldset [formGroupName]="index" [disabled]="busy()">
+        <legend>{{ t('storage') }} {{ index + 1 }}</legend>
+        <label [for]="'storage-name-' + index">{{ t('name') }}</label
+        ><input
+          #storageName
+          [id]="'storage-name-' + index"
+          formControlName="name"
+          [readOnly]="readOnly()"
+          [maxlength]="limits.name"
+        /><label [for]="'storage-medium-' + index">{{ t('medium') }}</label>
+        @if (readOnly()) {
+          <p>{{ t(row.controls.medium.value) }}</p>
+        } @else {
+          <select [id]="'storage-medium-' + index" formControlName="medium">
+            <option value="digital">{{ t('digital') }}</option>
+            <option value="paper">{{ t('paper') }}</option>
+          </select>
+        }
+        <label [for]="'storage-location-' + index">{{ t('location') }}</label
+        ><input
+          [id]="'storage-location-' + index"
+          formControlName="location"
+          [readOnly]="readOnly()"
+          [maxlength]="limits.detail"
+        />
+        @if (!readOnly()) {
+          <button
+            class="button button--quiet"
+            type="button"
+            (click)="remove('storage', index)"
+            [disabled]="busy()"
+            [attr.aria-label]="t('remove') + ' ' + t('storage') + ' ' + (index + 1)"
+          >
+            {{ t('remove') }}
+          </button>
+        }
+      </fieldset>
+    }
+  </div>
+  @if (form().controls.storageReferences.length === 0) {
+    <p>{{ t('none') }}</p>
+  }
+  @if (!readOnly()) {
+    <button
+      type="button"
+      class="button button--secondary"
+      #addStorageButton
+      (click)="add('storage')"
+      [disabled]="busy() || form().controls.storageReferences.length >= limits.count"
+    >
+      {{ t('addStorage') }}
+    </button>
+  }
+  @if (readOnly()) {
+    <p>{{ t('paperFlag') }}: {{ t(form().controls.hasPaperRecords.value ? 'yes' : 'no') }}</p>
+  } @else {
+    <label class="paper-flag"
+      ><input type="checkbox" formControlName="hasPaperRecords" />{{ t('paperFlag') }}</label
+    >
+  }
+  @if (paperUnmapped()) {
+    <p class="mapping-note">{{ t('unknown') }}</p>
+  }
+  @if (form().hasError('paperMismatch')) {
+    <p class="form-error">{{ t('mismatch') }}</p>
+  }
+  @if (form().touched && form().invalid) {
+    <p class="form-error">{{ t('invalid') }}</p>
+  }
+</section>

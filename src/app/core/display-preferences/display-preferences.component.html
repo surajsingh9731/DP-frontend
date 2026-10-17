@@ -1,0 +1,24 @@
+<button
+  sahmatiButton="quiet"
+  type="button"
+  (click)="i.locale.set(i.locale() === 'en' ? 'hi' : 'en')"
+  [attr.aria-label]="i.t('language')"
+  [attr.lang]="i.locale() === 'en' ? 'hi' : 'en'"
+>
+  {{ i.locale() === 'en' ? 'हिंदी' : 'English' }}
+</button>
+<details>
+  <summary>{{ i.t('display') }}</summary>
+  <div class="preferences__panel">
+    <button type="button" (click)="i.large.set(!i.large())" [attr.aria-pressed]="i.large()">
+      {{ i.t('larger') }}
+    </button>
+    <button
+      type="button"
+      (click)="i.contrast.set(!i.contrast())"
+      [attr.aria-pressed]="i.contrast()"
+    >
+      {{ i.t('contrast') }}
+    </button>
+  </div>
+</details>

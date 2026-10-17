@@ -1,0 +1,60 @@
+/* Sahmati adapter: official UX4G is in the lower ux4g cascade layer.
+   These audited bridges only handle legacy global anchor rules, local type,
+   touch targets, brand context and accessibility. No vendor interaction runtime. */
+:root {
+  --ux4g-font-family-base: 'Inter', 'Mukta', sans-serif;
+  --ux4g-font-family-display: 'Inter', 'Mukta', sans-serif;
+  --ux4g-bg-primary-strong: var(--primary);
+  --ux4g-bg-primary-strong-hover: var(--primary-hover);
+  --ux4g-bg-primary-strong-pressed: #352071;
+  --ux4g-bg-primary-soft: var(--primary-soft);
+  --ux4g-text-neutral-primary: var(--ink);
+  --ux4g-text-neutral-secondary: var(--muted);
+  --ux4g-text-neutral-inverse: #fff;
+  --ux4g-border-color-neutral-subtle: var(--line);
+}
+html[lang='hi'] {
+  --ux4g-font-family-base: 'Mukta', 'Inter', sans-serif;
+  --ux4g-font-family-display: 'Mukta', 'Inter', sans-serif;
+}
+.sahmati-button {
+  min-height: 44px;
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+  font-family: var(--ux4g-font-family-base);
+  gap: 0.6rem;
+}
+a.sahmati-button.ux4g-btn-primary,
+a.sahmati-button.ux4g-btn-danger {
+  color: var(--ux4g-text-neutral-inverse);
+}
+a.sahmati-button.ux4g-btn-outline-neutral {
+  color: var(--ink);
+}
+.sahmati-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+.sahmati-tag {
+  white-space: normal;
+  max-width: 100%;
+  font-family: var(--ux4g-font-family-base);
+}
+html[lang='hi'] .sahmati-button,
+html[lang='hi'] .sahmati-tag {
+  line-height: 1.6;
+}
+.high-contrast {
+  --ux4g-border-color-neutral-subtle: var(--line);
+}
+.sahmati-button:disabled {
+  cursor: not-allowed;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sahmati-card,
+  .sahmati-button {
+    transition: none;
+    animation: none;
+  }
+}

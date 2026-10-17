@@ -1,0 +1,335 @@
+<main id="main" class="retention-page">
+  <header>
+    <a [routerLink]="['/workspace', tenantId()]">{{ copy.t('back') }}</a
+    ><app-display-preferences />
+  </header>
+  <h1>{{ copy.t('title') }}</h1>
+  <p class="warning">{{ copy.t('intro') }}</p>
+  <p>{{ copy.t('scope') }}</p>
+  <p role="alert">{{ copy.message(error()) }}</p>
+  <p role="status">{{ copy.message(status()) }} {{ loading() ? copy.t('loading') : '' }}</p>
+  <label for="retention-activity">{{ copy.t('activity') }}</label
+  ><select id="retention-activity" [formControl]="activity" [disabled]="busy() || loading()">
+    <option value="">{{ copy.t('choose') }}</option>
+    @for (row of entries(); track row.id) {
+      <option [value]="row.id">{{ row.name }} · {{ row.version }}</option>
+    }
+  </select>
+  <div class="actions">
+    <button
+      class="button button--primary"
+      type="button"
+      (click)="choose()"
+      [disabled]="busy() || loading() || !activity.value"
+    >
+      {{ copy.t('open') }}</button
+    ><button
+      class="button button--secondary"
+      type="button"
+      (click)="load()"
+      [disabled]="busy() || loading()"
+    >
+      {{ copy.t('refresh') }}</button
+    ><button
+      class="button button--secondary"
+      type="button"
+      (click)="first()"
+      [disabled]="busy() || loading()"
+    >
+      {{ copy.t('first') }}
+    </button>
+  </div>
+  @if (entry(); as activityRow) {
+    <p>{{ copy.t('entryVersion') }}: {{ activityRow.version }}</p>
+    @if (editor()) {
+      <section class="panel">
+        <h2>{{ copy.t('policies') }}</h2>
+        <button
+          class="button button--secondary"
+          type="button"
+          (click)="newPolicy()"
+          [disabled]="busy() || loading()"
+        >
+          {{ copy.t('newPolicy') }}
+        </button>
+        <form [formGroup]="policyForm" (ngSubmit)="savePolicy()">
+          <fieldset [disabled]="busy() || loading()">
+            <label for="retention-name">{{ copy.t('name') }}</label
+            ><input id="retention-name" formControlName="name" maxlength="120" /><label
+              for="retention-days"
+              >{{ copy.t('days') }}</label
+            ><input
+              id="retention-days"
+              type="number"
+              formControlName="durationDays"
+              min="1"
+              max="36500"
+              step="1"
+              aria-describedby="duration-help"
+            />
+            <p id="duration-help">{{ copy.t('daysHelp') }}</p>
+            <label for="retention-rationale">{{ copy.t('rationale') }}</label
+            ><textarea
+              id="retention-rationale"
+              formControlName="rationale"
+              maxlength="1200"
+              rows="3"
+            ></textarea
+            ><label class="check"
+              ><input type="checkbox" formControlName="ack" />{{ copy.t('ack') }}</label
+            ><button class="button button--primary" type="submit">
+              {{ copy.t(selectedPolicy() ? 'editPolicy' : 'createPolicy') }}
+            </button>
+          </fieldset>
+        </form>
+        <ul>
+          @for (policy of policies().items; track policy.id) {
+            <li>
+              <strong>{{ policy.name }}</strong> · {{ copy.t(policy.status) }} ·
+              {{ copy.t('version') }} {{ policy.version }} · {{ policy.durationDays
+              }}<button
+                class="button button--secondary"
+                type="button"
+                (click)="inspectPolicy(policy.id)"
+                [disabled]="busy() || loading()"
+              >
+                {{ copy.t('inspect') }}
+              </button>
+            </li>
+          }
+        </ul>
+        @if (!policies().items.length) {
+          <p>{{ copy.t('noItems') }}</p>
+        }
+        <button
+          class="button button--secondary"
+          type="button"
+          (click)="nextList('policy')"
+          [disabled]="busy() || loading() || !policies().nextAfter"
+        >
+          {{ copy.t('nextPolicies') }}
+        </button>
+        @if (selectedPolicy(); as selected) {
+          <h3>
+            {{ selected.record.name }} · {{ copy.t(selected.record.status) }} ·
+            {{ copy.t('version') }} {{ selected.record.version }}
+          </h3>
+          <form [formGroup]="decision">
+            <fieldset [disabled]="busy() || loading()">
+              <label for="policy-decision">{{ copy.t('reason') }}</label
+              ><textarea
+                id="policy-decision"
+                formControlName="reason"
+                maxlength="1200"
+                rows="3"
+              ></textarea
+              ><label class="check"
+                ><input type="checkbox" formControlName="ack" />{{ copy.t('ack') }}</label
+              >
+              @if (owner()) {
+                <label class="check"
+                  ><input type="checkbox" formControlName="reviewAck" />{{
+                    copy.t('reviewAck')
+                  }}</label
+                >
+              }
+              <div class="actions">
+                @if (selected.record.status === 'draft') {
+                  <button
+                    class="button button--primary"
+                    type="button"
+                    (click)="policyAction('submit')"
+                  >
+                    {{ copy.t('submit') }}
+                  </button>
+                }
+                @if (owner() && selected.record.status === 'submitted') {
+                  <button
+                    class="button button--primary"
+                    type="button"
+                    (click)="policyAction('review')"
+                  >
+                    {{ copy.t('review') }}
+                  </button>
+                }
+                @if (owner() && selected.record.status !== 'retired') {
+                  <button
+                    class="button button--secondary"
+                    type="button"
+                    (click)="policyAction('retire')"
+                  >
+                    {{ copy.t('retire') }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+          </form>
+          <h3>{{ copy.t('history') }}</h3>
+          <ol>
+            @for (event of selected.history; track event.version) {
+              <li>
+                {{ copy.code(event.action) }} · {{ event.version }} ·
+                {{ event.at | date: 'medium' : undefined : copy.i.locale() }}
+                <p>{{ event.reason }}</p>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+    }
+    @if (owner()) {
+      <section class="panel">
+        <h2>{{ copy.t('holds') }}</h2>
+        <form [formGroup]="holdForm" (ngSubmit)="createHold()">
+          <fieldset [disabled]="busy() || loading()">
+            <label for="hold-scope">{{ copy.t('holdScope') }}</label
+            ><select id="hold-scope" formControlName="scope">
+              @for (scope of holdScopes; track scope) {
+                <option [value]="scope">
+                  {{ copy.t(scope === 'activity' ? 'activityScope' : scope) }}
+                </option>
+              }
+            </select>
+            @if (holdForm.controls.scope.value !== 'activity') {
+              <label for="hold-target">{{ copy.t('target') }}</label
+              ><select id="hold-target" formControlName="target">
+                <option value="">—</option>
+                @if (holdForm.controls.scope.value === 'sample_record') {
+                  @for (record of context()?.sampleRecords ?? []; track record.id) {
+                    <option [value]="record.id">{{ record.id }}</option>
+                  }
+                } @else {
+                  @for (location of context()?.locations ?? []; track location.key) {
+                    <option [value]="location.key">{{ location.name }}</option>
+                  }
+                }
+              </select>
+            }
+            <label for="hold-reason">{{ copy.t('reason') }}</label
+            ><textarea
+              id="hold-reason"
+              formControlName="reason"
+              maxlength="1200"
+              rows="3"
+            ></textarea
+            ><label class="check"
+              ><input type="checkbox" formControlName="ack" />{{ copy.t('ack') }}</label
+            ><button class="button button--primary" type="submit">
+              {{ copy.t('createHold') }}
+            </button>
+          </fieldset>
+        </form>
+        <ul>
+          @for (hold of holds().items; track hold.id) {
+            <li>
+              {{ copy.t(hold.status) }} ·
+              {{ copy.code(hold.scope === 'activity' ? 'activityScope' : hold.scope) }} ·
+              {{ copy.t('version') }} {{ hold.version }}
+              <p>{{ hold.reason }}</p>
+              <button
+                class="button button--secondary"
+                type="button"
+                (click)="inspectHold(hold.id)"
+                [disabled]="busy() || loading()"
+              >
+                {{ copy.t('inspect') }}
+              </button>
+            </li>
+          }
+        </ul>
+        <button
+          class="button button--secondary"
+          type="button"
+          (click)="nextList('hold')"
+          [disabled]="busy() || loading() || !holds().nextAfter"
+        >
+          {{ copy.t('nextHolds') }}
+        </button>
+        @if (selectedHold(); as selected) {
+          <h3>{{ copy.t(selected.record.status) }} · {{ selected.record.id }}</h3>
+          <p>{{ copy.t('releaseNote') }}</p>
+          @if (selected.record.status === 'active') {
+            <form [formGroup]="holdDecision" (ngSubmit)="releaseHold()">
+              <fieldset [disabled]="busy() || loading()">
+                <label for="hold-release">{{ copy.t('reason') }}</label
+                ><textarea
+                  id="hold-release"
+                  formControlName="reason"
+                  maxlength="1200"
+                  rows="3"
+                ></textarea
+                ><label class="check"
+                  ><input type="checkbox" formControlName="ack" />{{ copy.t('ack') }}</label
+                ><button class="button button--secondary" type="submit">
+                  {{ copy.t('releaseHold') }}
+                </button>
+              </fieldset>
+            </form>
+          }
+          <h3>{{ copy.t('history') }}</h3>
+          <ol>
+            @for (event of selected.history; track event.version) {
+              <li>
+                {{ copy.code(event.action) }} · {{ event.version }}
+                <p>{{ event.reason }}</p>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+      <section class="panel">
+        <h2>{{ copy.t('snapshot') }}</h2>
+        <form [formGroup]="scenario" (ngSubmit)="createPreview()">
+          <fieldset [disabled]="busy() || loading()">
+            <label for="retention-asof">{{ copy.t('scenario') }}</label
+            ><input
+              id="retention-asof"
+              formControlName="asOf"
+              maxlength="40"
+              aria-describedby="scenario-help"
+            />
+            <p id="scenario-help">{{ copy.t('scenarioHelp') }}</p>
+            <label class="check"
+              ><input type="checkbox" formControlName="ack" />{{ copy.t('ack') }}</label
+            ><button class="button button--primary" type="submit">{{ copy.t('run') }}</button>
+          </fieldset>
+        </form>
+      </section>
+      @if (preview(); as current) {
+        <app-retention-preview
+          [value]="current"
+          [busy]="busy() || loading()"
+          (next)="previewPage()"
+          (first)="previewPage(true)"
+        />
+      }
+      <section>
+        <h2>{{ copy.t('snapshots') }}</h2>
+        <ul>
+          @for (snapshot of snapshots().items; track snapshot.id) {
+            <li>
+              {{ snapshot.asOf
+              }}<button
+                class="button button--secondary"
+                type="button"
+                (click)="openSnapshot(snapshot.id)"
+                [disabled]="busy() || loading()"
+              >
+                {{ copy.t('openSnapshot') }}
+              </button>
+            </li>
+          }
+        </ul>
+        <button
+          class="button button--secondary"
+          type="button"
+          (click)="nextList('snapshot')"
+          [disabled]="busy() || loading() || !snapshots().nextAfter"
+        >
+          {{ copy.t('nextSaved') }}
+        </button>
+      </section>
+    }
+  }
+  <p>{{ copy.t('noExecution') }}</p>
+</main>

@@ -1,0 +1,233 @@
+<main id="main" tabindex="-1" class="preparation-page">
+  <header>
+    <a class="brand" routerLink="/"
+      ><img src="/brand/mark.svg" alt="" width="38" height="38" />Sahmati</a
+    ><app-display-preferences />
+  </header>
+  <a [routerLink]="['/workspace', tenantId()]">← {{ t('back') }}</a>
+  <h1>{{ t('title') }}</h1>
+  <p>{{ t('intro') }}</p>
+  <p class="warning">{{ t('warning') }}</p>
+  <p role="alert" class="form-error">{{ message(error()) }}</p>
+  <p role="status" class="status-message">{{ message(notice()) }}</p>
+  <div class="actions">
+    <button
+      class="button button--secondary"
+      type="button"
+      (click)="load()"
+      [disabled]="busy() || loading()"
+    >
+      {{ t('refresh') }}</button
+    ><button
+      class="button button--secondary"
+      type="button"
+      (click)="newDraft('template')"
+      [disabled]="busy() || loading() || !canPrepareTemplate()"
+    >
+      {{ t('newTemplate') }}</button
+    ><button
+      class="button button--secondary"
+      type="button"
+      (click)="newDraft('contact')"
+      [disabled]="busy() || loading() || !owner()"
+    >
+      {{ t('newContact') }}
+    </button>
+  </div>
+  @if (loading()) {
+    <p role="status">{{ t('loading') }}</p>
+  }
+  <div class="preparation-grid">
+    <section class="panel" aria-labelledby="preparation-records">
+      <h2 id="preparation-records">{{ t('records') }}</h2>
+      @if (records().length) {
+        <ul>
+          @for (record of records(); track record.id) {
+            <li>
+              <strong>{{ label(record) }}</strong>
+              <p>
+                {{ t(record.kind) }} · {{ t(record.status) }} · {{ t('version') }}
+                {{ record.version }}
+              </p>
+              <button
+                type="button"
+                class="button button--secondary"
+                [disabled]="busy() || loading()"
+                (click)="select(record)"
+                [attr.aria-pressed]="selected()?.id === record.id"
+              >
+                {{ t('open') }}: {{ label(record) }}
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>{{ t('empty') }}</p>
+      }
+    </section>
+    <section class="panel" aria-labelledby="preparation-editor">
+      <h2 id="preparation-editor">{{ t('editor') }} · {{ t(kind()) }}</h2>
+      @if (!canEdit()) {
+        <p>{{ t('viewOnly') }}</p>
+      }
+      @if (selected(); as record) {
+        <p>{{ t(record.status) }} · {{ t('version') }} {{ record.version }}</p>
+        <p>
+          {{ t('pack') }}:
+          {{
+            record.sourcePack ? record.sourcePack.id + ' / ' + record.sourcePack.version : t('none')
+          }}
+        </p>
+        <p>{{ t('unreviewed') }} · {{ t('unverified') }}</p>
+        <details>
+          <summary>{{ t('hash') }}</summary>
+          <code>{{ record.contentHash }}</code>
+        </details>
+      }
+      <p class="hint">{{ t('editWarning') }}</p>
+      @if (kind() === 'template') {
+        <form [formGroup]="template" (submit)="save(); $event.preventDefault()" novalidate>
+          <fieldset [disabled]="busy() || loading() || !canEdit()">
+            <label for="preparation-title">{{ t('titleLabel') }}</label
+            ><input
+              id="preparation-title"
+              formControlName="title"
+              [attr.lang]="template.controls.language.value"
+              [maxlength]="limits.title"
+              required
+            />
+            <p class="hint">{{ t('limit') }}: {{ limits.title }}</p>
+            <label for="preparation-body">{{ t('bodyLabel') }}</label
+            ><textarea
+              id="preparation-body"
+              formControlName="body"
+              [attr.lang]="template.controls.language.value"
+              [maxlength]="limits.body"
+              rows="6"
+              required
+            ></textarea>
+            <p class="hint">{{ t('limit') }}: {{ limits.body }}</p>
+            <label for="preparation-language">{{ t('language') }}</label
+            ><select id="preparation-language" formControlName="language">
+              @for (language of languages; track language) {
+                <option [value]="language">{{ t(language) }}</option>
+              }
+            </select>
+            <label for="preparation-source">{{ t('source') }}</label
+            ><select id="preparation-source" formControlName="sourceKind">
+              <option value="custom-draft">{{ t('custom') }}</option>
+              <option value="education-sample">{{ t('education') }}</option>
+            </select>
+            <button type="button" class="button button--quiet" (click)="preset()">
+              {{ t('preset') }}
+            </button>
+          </fieldset>
+          @if (canEdit()) {
+            <button class="button button--primary" type="submit" [disabled]="busy() || loading()">
+              {{ t('save') }}
+            </button>
+          }
+        </form>
+      } @else {
+        <form [formGroup]="contact" (submit)="save(); $event.preventDefault()" novalidate>
+          <fieldset [disabled]="busy() || loading() || !canEdit()">
+            <label for="preparation-contact-name">{{ t('displayName') }}</label
+            ><input
+              id="preparation-contact-name"
+              formControlName="displayName"
+              [maxlength]="limits.contactName"
+              required
+            />
+            <label for="preparation-contact-email">{{ t('email') }}</label
+            ><input
+              id="preparation-contact-email"
+              formControlName="email"
+              type="email"
+              [maxlength]="limits.email"
+              required
+            />
+            <p class="hint">{{ t('unverified') }}</p>
+          </fieldset>
+          @if (canEdit()) {
+            <button class="button button--primary" type="submit" [disabled]="busy() || loading()">
+              {{ t('save') }}
+            </button>
+          }
+        </form>
+      }
+      @if (selected()) {
+        <section aria-labelledby="preparation-review">
+          <h3 id="preparation-review">{{ t('review') }}</h3>
+          @if (canSubmit()) {
+            <button
+              type="button"
+              class="button button--secondary"
+              [disabled]="busy() || loading()"
+              (click)="act('submit')"
+            >
+              {{ t('submit') }}
+            </button>
+          }
+          @if (canReview()) {
+            <fieldset [disabled]="busy() || loading()">
+              <label for="preparation-comment">{{ t('comment') }}</label
+              ><textarea
+                id="preparation-comment"
+                [formControl]="comment"
+                rows="3"
+                [maxlength]="limits.comment"
+                aria-describedby="preparation-comment-hint"
+              ></textarea>
+              <p id="preparation-comment-hint" class="hint">
+                {{ t('commentHint') }} {{ t('limit') }}: {{ limits.comment }}
+              </p>
+              <label class="ack" for="preparation-ack"
+                ><input id="preparation-ack" type="checkbox" [formControl]="acknowledged" /><span>{{
+                  t('ack')
+                }}</span></label
+              >
+              <div class="actions">
+                <button
+                  type="button"
+                  class="button button--secondary"
+                  (click)="act('request_changes')"
+                >
+                  {{ t('request_changes') }}</button
+                ><button
+                  type="button"
+                  class="button button--primary"
+                  (click)="act('review_internal')"
+                >
+                  {{ t('review_internal') }}
+                </button>
+              </div>
+            </fieldset>
+          }
+        </section>
+        <section aria-labelledby="preparation-history">
+          <h3 id="preparation-history">{{ t('history') }}</h3>
+          <p class="hint">{{ t('historyHint') }}</p>
+          <ol>
+            @for (revision of selected()?.history; track revision.version) {
+              <li>
+                <details>
+                  <summary>
+                    {{ t('version') }} {{ revision.version }} ·
+                    {{ revision.action === 'saved' ? t('savedAction') : t(revision.action) }} ·
+                    {{ t(revision.status) }}
+                  </summary>
+                  <p>{{ revision.createdAt | date: 'medium' : undefined : i.locale() }}</p>
+                  <p>{{ t('actor') }}: {{ revision.actorId }}</p>
+                  <p>{{ revision.comment }}</p>
+                  <pre>{{ historyData(revision) }}</pre>
+                  <code>{{ revision.contentHash }}</code>
+                </details>
+              </li>
+            }
+          </ol>
+        </section>
+      }
+      <p>{{ t('readiness') }}</p>
+    </section>
+  </div>
+</main>

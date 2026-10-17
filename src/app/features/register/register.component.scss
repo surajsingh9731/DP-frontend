@@ -1,0 +1,148 @@
+:host {
+  display: block;
+}
+.register-page {
+  max-width: 85rem;
+  margin: auto;
+  padding: 1.5rem 2rem 4rem;
+}
+.register-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.register-warning {
+  background: var(--amber-soft);
+  color: var(--amber);
+  border-radius: 0.7rem;
+  padding: 1rem;
+}
+.register-grid {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.7fr) minmax(0, 1.3fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.register-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.register-list li {
+  padding: 1.2rem;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.register-list li:last-child {
+  border: 0;
+}
+.register-list li p {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.register-editor form {
+  padding: 1.3rem;
+}
+.register-editor fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.register-field {
+  margin-bottom: 1rem;
+}
+.register-field label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+.register-field input,
+.register-field textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.65rem;
+  min-height: 2.9rem;
+}
+.register-field textarea {
+  resize: vertical;
+}
+.register-field textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+.register-field input[aria-invalid='true'],
+.register-field textarea[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+.register-field .field-hint {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+}
+.register-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.register-details {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+}
+.notice-preview {
+  border: 1px solid var(--line);
+  padding: 1.2rem;
+  margin: 1.5rem 0;
+  border-radius: 0.7rem;
+}
+.notice-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.revision-list {
+  padding-inline-start: 1.5rem;
+}
+.revision-list summary {
+  cursor: pointer;
+  min-height: 2.8rem;
+  padding: 0.6rem 0;
+}
+.revision-list dt {
+  font-weight: 600;
+}
+.revision-list dd {
+  margin: 0 0 1rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.register-field:has(:disabled) {
+  opacity: 0.9;
+}
+@media (max-width: 800px) {
+  .register-page {
+    padding: 1rem 1rem 3rem;
+  }
+  .register-grid {
+    grid-template-columns: 1fr;
+  }
+  .register-details {
+    padding: 1.1rem;
+  }
+  .register-header .brand {
+    font-size: 1.3rem;
+  }
+  .preferences {
+    flex-wrap: wrap;
+  }
+  .register-actions .button {
+    flex: 1 1 auto;
+  }
+}

@@ -1,0 +1,278 @@
+<main id="main" tabindex="-1" class="notices-page">
+  <header class="notices-header">
+    <a class="brand" routerLink="/"
+      ><img src="/brand/mark.svg" alt="" width="38" height="38" /><span>Sahmati</span></a
+    ><app-display-preferences />
+  </header>
+  <a class="back-link" [routerLink]="['/workspace', tenantId()]">← {{ t('back') }}</a>
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">{{ t('localSample') }}</span>
+      <h1>{{ t('title') }}</h1>
+      <p>{{ t('intro') }}</p>
+    </div>
+    <button
+      class="button button--secondary"
+      type="button"
+      [disabled]="busy() || loading()"
+      (click)="load()"
+    >
+      {{ t('refresh') }}
+    </button>
+  </div>
+  <p class="notices-warning">{{ t('disclaimer') }}</p>
+  <p class="form-error" role="alert">{{ message(error()) }}</p>
+  <p class="status-message" role="status">{{ message(notice()) }}</p>
+  @if (loading()) {
+    <p role="status">{{ t('loading') }}</p>
+  } @else if (error() !== 'unavailable') {
+    @if (!canSubmit()) {
+      <p class="notice">{{ t('viewer') }}</p>
+    }
+    <section class="panel notices-submit" aria-labelledby="submit-title">
+      <h2 id="submit-title">{{ t('submitTitle') }}</h2>
+      @if (entries().length || chosenEntry()) {
+        <form (submit)="submit(); $event.preventDefault()" novalidate>
+          <fieldset [disabled]="!canSubmit() || busy()">
+            <label for="notice-entry">{{ t('entry') }}</label
+            ><select
+              id="notice-entry"
+              [formControl]="entryChoice"
+              (change)="chooseEntry($event)"
+              aria-describedby="notice-submit-hint"
+            >
+              <option value="">{{ t('choose') }}</option>
+              @if (previousSelection()) {
+                <option [value]="entryKey(chosenEntry()!)">
+                  {{ chosenEntry()?.name }} · {{ chosenEntry()?.version }} —
+                  {{ t('previousSelection') }}
+                </option>
+              }
+              @for (entry of entries(); track entry.id) {
+                <option [value]="entryKey(entry)">{{ entry.name }} · {{ entry.version }}</option>
+              }
+            </select>
+            <label for="notice-language">{{ t('language') }}</label
+            ><select id="notice-language" [formControl]="language">
+              @for (language of languages; track language) {
+                <option [value]="language">{{ t(language) }}</option>
+              }
+            </select>
+            <p id="notice-submit-hint" class="field-hint">{{ t('submitHint') }}</p>
+            <p>{{ t('preparationHint') }}</p>
+            <a [routerLink]="['/workspace', tenantId(), 'preparation']">{{
+              t('openPreparation')
+            }}</a>
+            <label class="sample-ack" for="notice-use-preparation"
+              ><input
+                id="notice-use-preparation"
+                type="checkbox"
+                [formControl]="usePreparation"
+              /><span>{{ t('usePreparation') }}</span></label
+            >
+            @if (usePreparation.value) {
+              <button
+                type="button"
+                class="button button--secondary"
+                (click)="loadPreparation()"
+                [disabled]="preparationLoading()"
+              >
+                {{ t('loadPreparation') }}
+              </button>
+              <label for="notice-template-choice">{{ t('templateChoice') }}</label
+              ><select id="notice-template-choice" [formControl]="templateChoice">
+                <option value="">{{ t('choosePreparation') }}</option>
+                @for (record of readyTemplates(); track record.id) {
+                  <option [value]="record.id">
+                    {{ preparationLabel(record) }} · {{ record.version }}
+                  </option>
+                }
+              </select>
+              <label for="notice-contact-choice">{{ t('contactChoice') }}</label
+              ><select id="notice-contact-choice" [formControl]="contactChoice">
+                <option value="">{{ t('choosePreparation') }}</option>
+                @for (record of readyContacts(); track record.id) {
+                  <option [value]="record.id">
+                    {{ preparationLabel(record) }} · {{ record.version }}
+                  </option>
+                }
+              </select>
+            }
+          </fieldset>
+          @if (canSubmit()) {
+            <button class="button button--primary" type="submit" [disabled]="busy()">
+              {{ t(busy() ? 'submitting' : 'submit') }}
+            </button>
+          }
+        </form>
+      } @else {
+        <p>{{ t('emptyRegister') }}</p>
+        <a class="button button--secondary" [routerLink]="['/workspace', tenantId(), 'register']">{{
+          t('register')
+        }}</a>
+      }
+    </section>
+    <div class="notices-grid">
+      <section class="panel notices-list" aria-labelledby="notices-title">
+        <h2 id="notices-title">{{ t('list') }}</h2>
+        @if (notices().length) {
+          <ul>
+            @for (item of notices(); track item.id) {
+              <li>
+                <strong>{{ item.registerData.name }}</strong
+                ><span class="badge">{{ t(item.status) }}</span>
+                <p>{{ t('sourceVersion') }} {{ item.entryVersion }} · {{ t(item.language) }}</p>
+                <button
+                  class="button button--secondary"
+                  type="button"
+                  [disabled]="busy() || detailsBusy()"
+                  [attr.aria-pressed]="selected()?.id === item.id"
+                  (click)="select(item)"
+                >
+                  {{ t('select') }}
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p>{{ t('empty') }}</p>
+        }
+      </section>
+      <section class="panel notices-detail" aria-labelledby="snapshot-title">
+        <h2 id="snapshot-title">{{ t('selected') }}</h2>
+        @if (detailsBusy()) {
+          <p role="status">{{ t('loadingSnapshot') }}</p>
+        }
+        @if (selected(); as snapshot) {
+          <span class="badge">{{ t(snapshot.status) }}</span>
+          <p class="notices-mode">{{ t('localSample') }}</p>
+          <dl class="snapshot-meta">
+            <div>
+              <dt>{{ t('sourceVersion') }}</dt>
+              <dd>{{ snapshot.entryVersion }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('reviewVersion') }}</dt>
+              <dd>{{ snapshot.reviewVersion }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('language') }}</dt>
+              <dd>{{ t(snapshot.language) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('pack') }}</dt>
+              <dd>
+                @if (snapshot.sourcePack; as pack) {
+                  {{ pack.id }} · {{ pack.version }} · {{ t('unreviewed') }}
+                } @else {
+                  {{ t('noPack') }}
+                }
+              </dd>
+            </div>
+            <div>
+              <dt>{{ t('submittedAt') }}</dt>
+              <dd>{{ snapshot.submittedAt | date: 'medium' : undefined : i.locale() }}</dd>
+            </div>
+          </dl>
+          @if (snapshot.preparationSource; as source) {
+            <p class="notices-warning">
+              {{ t('pinnedPreparation') }}: {{ t('templateChoice') }} {{ source.templateVersion }} ·
+              {{ t('contactChoice') }} {{ source.contactVersion }}. {{ t('preparationHint') }}
+            </p>
+          }
+          <article class="notice-snapshot" [attr.lang]="snapshot.language">
+            <h3>{{ snapshot.preview.title }}</h3>
+            <p class="notices-warning">{{ snapshot.preview.warning }}</p>
+            <div class="snapshot-body">{{ snapshot.preview.body }}</div>
+          </article>
+          @if (canDecide()) {
+            <section class="notice-decision" aria-labelledby="decision-title">
+              <h3 id="decision-title">{{ t('decisionTitle') }}</h3>
+              <p>{{ t('decisionHint') }}</p>
+              <fieldset [disabled]="busy()">
+                <label for="notice-comment">{{ t('comment') }}</label
+                ><textarea
+                  id="notice-comment"
+                  [formControl]="comment"
+                  rows="3"
+                  [maxlength]="commentLimit"
+                  aria-describedby="notice-comment-hint"
+                  [attr.aria-invalid]="comment.touched && comment.invalid"
+                ></textarea>
+                <p id="notice-comment-hint" class="field-hint">
+                  {{ t('commentHint') }} {{ t('limit') }}: {{ commentLimit }}
+                </p>
+                <label class="sample-ack" for="notice-ack"
+                  ><input id="notice-ack" type="checkbox" [formControl]="acknowledged" /><span>{{
+                    t('acknowledge')
+                  }}</span></label
+                >
+                <div class="notices-actions">
+                  <button
+                    class="button button--secondary"
+                    type="button"
+                    (click)="decide('request_changes')"
+                  >
+                    {{ t('changes') }}</button
+                  ><button
+                    class="button button--primary"
+                    type="button"
+                    (click)="decide('publish_sample')"
+                  >
+                    {{ t('publish') }}
+                  </button>
+                </div>
+              </fieldset>
+            </section>
+          } @else if (snapshot.status === 'in_review') {
+            <p class="notice">{{ t('ownerOnly') }}</p>
+          } @else {
+            <p class="notice">{{ t('closedReview') }}</p>
+          }
+          @if (owner() && snapshot.status === 'sample_published') {
+            <section class="notice-exports" aria-labelledby="notice-exports-title">
+              <h3 id="notice-exports-title">{{ t('exports') }}</h3>
+              <p>{{ t('exportHint') }}</p>
+              <div class="notices-actions">
+                <a
+                  class="button button--secondary"
+                  [href]="exportUrl(snapshot.id, 'pdf')"
+                  [attr.download]="exportFilenames.pdf"
+                  >{{ t('downloadPdf') }}</a
+                ><a
+                  class="button button--secondary"
+                  [href]="exportUrl(snapshot.id, 'qr')"
+                  [attr.download]="exportFilenames.qr"
+                  >{{ t('downloadQr') }}</a
+                >
+              </div>
+            </section>
+          }
+          <section class="decision-history" aria-labelledby="history-title">
+            <h3 id="history-title">{{ t('history') }}</h3>
+            @if (snapshot.decisions.length) {
+              <ol>
+                @for (decision of snapshot.decisions; track decision.id) {
+                  <li>
+                    <strong>{{ t(decision.decision) }}</strong>
+                    <p>
+                      {{ t('reviewVersion') }} {{ decision.version }} ·
+                      <time [attr.datetime]="decision.decidedAt">{{
+                        decision.decidedAt | date: 'medium' : undefined : i.locale()
+                      }}</time>
+                    </p>
+                    <p class="decision-comment">{{ decision.comment || t('noComment') }}</p>
+                  </li>
+                }
+              </ol>
+            } @else {
+              <p>{{ t('noDecisions') }}</p>
+            }
+          </section>
+        } @else {
+          <p>{{ t('selectHint') }}</p>
+        }
+      </section>
+    </div>
+  }
+</main>

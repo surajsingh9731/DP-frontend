@@ -1,0 +1,19 @@
+@use '../../core/rights/rights-page';
+.retention-page {
+  @extend .rights-page;
+}
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+button {
+  margin: 0.35rem 0;
+}
+code {
+  overflow-wrap: anywhere;
+}
+li {
+  overflow-wrap: anywhere;
+}

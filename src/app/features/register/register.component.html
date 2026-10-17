@@ -1,0 +1,236 @@
+<div class="register-page">
+  <header class="register-header">
+    <a class="brand" routerLink="/"
+      ><img src="/brand/mark.svg" alt="" width="42" height="42" /><span>Sahmati</span></a
+    >
+    <app-display-preferences />
+  </header>
+  <main id="main" tabindex="-1">
+    <a class="back-link" [routerLink]="['/workspace', tenantId()]">← {{ t('back') }}</a>
+    <div class="page-heading">
+      <div>
+        <span class="eyebrow">{{ t('draft') }}</span>
+        <h1>{{ t('title') }}</h1>
+        <p>{{ t('intro') }}</p>
+      </div>
+      <button
+        class="button button--secondary"
+        type="button"
+        [disabled]="loading() || busy()"
+        (click)="load()"
+      >
+        {{ t('refresh') }}
+      </button>
+    </div>
+    <p class="register-warning">{{ t('warning') }}</p>
+    <p role="alert" class="form-error">{{ message(error()) }}</p>
+    <p role="status" class="status-message">
+      {{ message(notice()) }}{{ loading() ? t('loading') : '' }}
+    </p>
+    <div class="register-grid">
+      <section class="panel register-list" aria-labelledby="draft-list-title">
+        <div class="panel__heading">
+          <h2 id="draft-list-title">{{ t('list') }}</h2>
+        </div>
+        @if (owner()) {
+          <div class="panel__footer">
+            <button
+              type="button"
+              class="button button--primary"
+              (click)="reset()"
+              [disabled]="busy()"
+            >
+              {{ t('new') }}
+            </button>
+          </div>
+        }
+        @if (entries().length === 0 && !loading()) {
+          <p class="panel__empty">{{ t('empty') }}</p>
+        }
+        <ul>
+          @for (entry of entries(); track entry.id) {
+            <li>
+              <h3>{{ entry.name }}</h3>
+              <p>{{ t('version') }} {{ entry.version }} · {{ t('draft') }}</p>
+              <button
+                type="button"
+                class="button button--secondary"
+                [attr.aria-pressed]="selected()?.id === entry.id"
+                (click)="select(entry)"
+                [disabled]="busy()"
+              >
+                {{ t(owner() ? 'edit' : 'view') }}: {{ entry.name }}
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+      <section class="panel register-editor" aria-labelledby="editor-title">
+        <div class="panel__heading">
+          <div>
+            <h2 id="editor-title">{{ t(selected() ? 'edit' : 'new') }}</h2>
+            @if (selected(); as entry) {
+              <p>{{ t('current') }}: {{ entry.version }}</p>
+              @if (entry.sourcePack; as pack) {
+                <p>{{ t('sourcePack') }}: {{ pack.id }} · {{ t('version') }} {{ pack.version }}</p>
+              }
+            }
+          </div>
+          <span class="badge">{{ t('draft') }}</span>
+        </div>
+        @if (!owner()) {
+          <p class="panel__empty">{{ t('readOnly') }}</p>
+        }
+        <form [formGroup]="form" (submit)="save(); $event.preventDefault()" novalidate>
+          <fieldset [disabled]="busy()">
+            <legend class="sr-only">{{ t('title') }}</legend>
+            @for (field of fields; track field) {
+              <div class="register-field">
+                <label [for]="'register-' + field">{{ t(field) }}</label>
+                @if (field === 'name' || field === 'contact') {
+                  <input
+                    [id]="'register-' + field"
+                    [formControlName]="field"
+                    [maxlength]="limits[field]"
+                    [readOnly]="!owner()"
+                    [attr.aria-invalid]="
+                      form.controls[field].touched && form.controls[field].invalid
+                    "
+                    [attr.aria-describedby]="'hint-' + field"
+                    autocomplete="off"
+                  />
+                } @else {
+                  <textarea
+                    [id]="'register-' + field"
+                    [formControlName]="field"
+                    rows="3"
+                    [maxlength]="limits[field]"
+                    [readOnly]="!owner()"
+                    [attr.lang]="field === 'purposeEn' ? 'en' : field === 'purposeHi' ? 'hi' : null"
+                    [attr.aria-invalid]="
+                      form.controls[field].touched && form.controls[field].invalid
+                    "
+                    [attr.aria-describedby]="'hint-' + field"
+                  ></textarea>
+                }
+                <p class="field-hint" [id]="'hint-' + field">
+                  {{ t('limit') }}: {{ limits[field] }}.
+                  @if (field === 'dataCategories') {
+                    {{ t('categoriesHint') }}
+                  }
+                  @if (form.controls[field].touched && form.controls[field].invalid) {
+                    {{ t('fieldRequired') }}
+                  }
+                </p>
+              </div>
+            }
+            <app-registry-references [form]="references" [readOnly]="!owner()" [busy]="busy()" />
+          </fieldset>
+          <div class="register-actions">
+            @if (owner()) {
+              <button type="submit" class="button button--primary" [disabled]="busy() || loading()">
+                {{ t(busy() ? 'saving' : 'save') }}
+              </button>
+            }
+            <button
+              type="button"
+              class="button button--secondary"
+              (click)="reset()"
+              [disabled]="busy()"
+            >
+              {{ t('cancel') }}
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+    @if (selected()) {
+      <section class="panel register-details" aria-labelledby="saved-details-title">
+        <h2 id="saved-details-title">{{ t('previewTitle') }}</h2>
+        <p>{{ t('previewHint') }}</p>
+        <div class="register-actions">
+          <button
+            class="button button--secondary"
+            type="button"
+            (click)="history()"
+            [disabled]="detailsBusy() || busy()"
+          >
+            {{ t('history') }}</button
+          ><button
+            class="button button--primary"
+            type="button"
+            (click)="showPreview()"
+            [disabled]="detailsBusy() || busy()"
+          >
+            {{ t('preview') }}
+          </button>
+        </div>
+        <p role="status">{{ detailsBusy() ? t('detailsLoading') : '' }}</p>
+        @if (preview(); as notice) {
+          <article class="notice-preview" [attr.lang]="notice.language">
+            <h3>{{ notice.title }}</h3>
+            @if (notice.sourcePack; as pack) {
+              <p>{{ t('sourcePack') }}: {{ pack.id }} · {{ t('version') }} {{ pack.version }}</p>
+            }
+            <p class="badge">{{ t('notPublished') }} · {{ t('version') }} {{ notice.version }}</p>
+            <p>{{ notice.warning }}</p>
+            <p class="notice-body">{{ notice.body }}</p>
+          </article>
+        }
+        <h3>{{ t('historyTitle') }}</h3>
+        @if (revisions().length === 0) {
+          <p>{{ t('historyEmpty') }}</p>
+        }
+        <ol class="revision-list">
+          @for (revision of revisions(); track revision.version) {
+            <li>
+              <details>
+                <summary>
+                  {{ t('version') }} {{ revision.version }} ·
+                  {{ revision.createdAt | date: 'medium' : undefined : i.locale() }}
+                </summary>
+                <dl>
+                  @for (field of fields; track field) {
+                    <dt>{{ t(field) }}</dt>
+                    <dd>
+                      {{
+                        field === 'dataCategories'
+                          ? revision.data.dataCategories.join(', ')
+                          : revision.data[field]
+                      }}
+                    </dd>
+                  }
+                  <dt>{{ t('vendorReferences') }}</dt>
+                  <dd>
+                    <ul>
+                      @for (reference of revision.data.vendorReferences ?? []; track $index) {
+                        <li>{{ reference.name }} · {{ reference.service }}</li>
+                      } @empty {
+                        <li>{{ t('noneDeclared') }}</li>
+                      }
+                    </ul>
+                  </dd>
+                  <dt>{{ t('storageReferences') }}</dt>
+                  <dd>
+                    <ul>
+                      @for (reference of revision.data.storageReferences ?? []; track $index) {
+                        <li>
+                          {{ reference.name }} · {{ t(reference.medium) }} ·
+                          {{ reference.location }}
+                        </li>
+                      } @empty {
+                        <li>{{ t('noneDeclared') }}</li>
+                      }
+                    </ul>
+                  </dd>
+                  <dt>{{ t('hasPaperRecords') }}</dt>
+                  <dd>{{ t(revision.data.hasPaperRecords ? 'yes' : 'no') }}</dd>
+                </dl>
+              </details>
+            </li>
+          }
+        </ol>
+      </section>
+    }
+  </main>
+</div>

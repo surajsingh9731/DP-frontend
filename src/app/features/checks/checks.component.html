@@ -1,0 +1,248 @@
+<main id="main" class="checks-page">
+  <header>
+    <a [routerLink]="['/workspace', tenantId()]">{{ t('back') }}</a
+    ><a [routerLink]="['/workspace', tenantId(), 'followups']">{{ t('followups') }}</a
+    ><app-display-preferences />
+  </header>
+  <h1>{{ t('title') }}</h1>
+  <p class="warning">{{ t('intro') }}</p>
+  <p role="alert">{{ message(error()) }}</p>
+  <p role="status">{{ message(status()) }} {{ loading() ? t('loading') : '' }}</p>
+  <button
+    type="button"
+    class="button button--secondary"
+    (click)="load()"
+    [disabled]="busy() || loading()"
+  >
+    {{ t('refresh') }}
+  </button>
+  @if (!canEvaluate()) {
+    <p>{{ t('readOnly') }}</p>
+  }
+  <section>
+    <h2>{{ t('tasks') }}</h2>
+    @if (!tasks().length) {
+      <p>{{ t('empty') }}</p>
+    }
+    <ul class="task-list">
+      @for (task of tasks(); track task.id) {
+        <li>
+          <strong>{{ location(task) }}</strong>
+          <p>{{ t('version') }} {{ task.version }}</p>
+          <a
+            class="button button--secondary"
+            [routerLink]="['/workspace', tenantId(), 'checks', task.id]"
+            >{{ t('inspect') }}</a
+          >
+        </li>
+      }
+    </ul>
+  </section>
+  @if (detail(); as data) {
+    <section class="panel" aria-labelledby="check-heading">
+      <h2 id="check-heading" #checkHeading tabindex="-1">
+        {{ t('results') }} ·
+        {{ location(data.task) }}
+      </h2>
+      <p>
+        {{ t('version') }} {{ data.task.version }} ·
+        <a [routerLink]="['/workspace', tenantId(), 'followups', data.task.id]">{{
+          t('followups')
+        }}</a>
+      </p>
+      <p class="reference">{{ data.task.receiptId }} · {{ data.task.receiptHash }}</p>
+      <p>
+        {{ t('freshness') }}: {{ freshness() === 'current' ? t('reviewCurrent') : t(freshness()) }}
+      </p>
+      <p class="warning">{{ t(current() ? 'current' : 'stale') }}</p>
+      @if (canEvaluate()) {
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="evaluate()"
+          [disabled]="busy() || loading()"
+        >
+          {{ t('evaluate') }}
+        </button>
+      }
+      @if (latest(); as evaluation) {
+        <p>
+          {{ t('asOf') }}: {{ evaluation.computedAt | date: 'medium' : undefined : i.locale() }}
+        </p>
+        <ul class="results">
+          @for (check of evaluation.checks; track check.id) {
+            <li>
+              <h3>{{ t(check.id) }}</h3>
+              <strong>{{ t(shownResult(check.result)) }}</strong>
+              <p>{{ current() ? reason(check.reason) : t('staleReason') }}</p>
+              <p>
+                {{ t('provenance') }}:
+                {{ t(check.provenance === 'local-record' ? 'computed' : 'manual') }}
+              </p>
+              <ul>
+                @for (reference of check.references; track $index) {
+                  <li>
+                    <code>{{ reference }}</code>
+                  </li>
+                }
+              </ul>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>{{ t('noEvaluations') }}</p>
+      }
+      @if (data.task.mappingResolution) {
+        <p>{{ t('original') }}</p>
+      }
+      @if (data.task.mappedTaskIds?.length) {
+        <h3>{{ t('linkedTasks') }}</h3>
+        <ul>
+          @for (id of data.task.mappedTaskIds; track id) {
+            <li>
+              <a [routerLink]="['/workspace', tenantId(), 'checks', id]">{{ id }}</a>
+            </li>
+          }
+        </ul>
+      }
+      @if (owner()) {
+        <details>
+          <summary>{{ t('ownerReview') }}</summary>
+          <p>{{ t('manual') }}</p>
+          @if (data.task.location.mapping === 'unknown') {
+            <p>{{ t('coverage') }}</p>
+          }
+          <form [formGroup]="review" (ngSubmit)="saveReview()">
+            <fieldset [disabled]="busy() || loading()">
+              <label for="check-applicability">{{ t('applicability') }}</label
+              ><select id="check-applicability" formControlName="applicability">
+                <option value="applicable">{{ t('applicable') }}</option>
+                @if (data.task.location.mapping !== 'unknown') {
+                  <option value="not_applicable">{{ t('not_applicable') }}</option>
+                }</select
+              ><label for="check-result">{{ t('outcome') }}</label
+              ><select id="check-result" formControlName="result">
+                @for (result of results; track result) {
+                  @if (data.task.location.mapping !== 'unknown' || result === 'unknown') {
+                    <option [value]="result">{{ t(result) }}</option>
+                  }
+                }</select
+              ><label for="check-rationale">{{ t('rationale') }}</label
+              ><textarea
+                id="check-rationale"
+                formControlName="rationale"
+                [maxLength]="limits.rationale"
+                rows="3"
+              ></textarea
+              ><label for="check-references">{{ t('references') }}</label
+              ><textarea
+                id="check-references"
+                formControlName="references"
+                aria-describedby="check-reference-help"
+                rows="3"
+              ></textarea>
+              <p id="check-reference-help">{{ t('referenceHelp') }}</p>
+              <label for="check-window">{{ t('window') }}</label
+              ><input
+                id="check-window"
+                type="number"
+                formControlName="validForMinutes"
+                min="1"
+                [max]="limits.minutes"
+              /><label class="check"
+                ><input type="checkbox" formControlName="ack" />{{ t('ack') }}</label
+              ><button class="button button--primary" type="submit">{{ t('saveReview') }}</button>
+            </fieldset>
+          </form>
+        </details>
+        @if (data.task.location.mapping === 'unknown') {
+          <details>
+            <summary>{{ t('mapping') }}</summary>
+            <p>{{ t('mappingHelp') }}</p>
+            <form [formGroup]="mapping" (ngSubmit)="saveMapping()">
+              <fieldset [disabled]="busy() || loading()">
+                <label for="mapping-kind">{{ t('kind') }}</label
+                ><select id="mapping-kind" formControlName="kind">
+                  @for (kind of kinds; track kind) {
+                    @if (data.task.location.name !== 'paper' || kind === 'paper') {
+                      <option [value]="kind">{{ t(kind) }}</option>
+                    }
+                  }</select
+                ><label for="mapping-name">{{ t('name') }}</label
+                ><input id="mapping-name" formControlName="name" [maxLength]="limits.label" /><label
+                  for="mapping-detail"
+                  >{{ t('detail') }}</label
+                ><input
+                  id="mapping-detail"
+                  formControlName="detail"
+                  [maxLength]="limits.label"
+                /><label for="mapping-rationale">{{ t('rationale') }}</label
+                ><textarea
+                  id="mapping-rationale"
+                  formControlName="rationale"
+                  rows="3"
+                  [maxLength]="limits.rationale"
+                ></textarea
+                ><label for="mapping-references">{{ t('references') }}</label
+                ><textarea
+                  id="mapping-references"
+                  formControlName="references"
+                  rows="3"
+                  aria-describedby="mapping-help"
+                ></textarea>
+                <p id="mapping-help">{{ t('referenceHelp') }}</p>
+                <label class="check"
+                  ><input type="checkbox" formControlName="ack" />{{ t('ack') }}</label
+                ><button class="button button--primary" type="submit">
+                  {{ t('saveMapping') }}
+                </button>
+              </fieldset>
+            </form>
+          </details>
+        }
+      }
+      <h3>{{ t('reviewHistory') }}</h3>
+      <ol>
+        @for (row of data.reviews; track row.id) {
+          <li>
+            <strong>{{ t(row.result) }}</strong>
+            <p>{{ row.rationale }}</p>
+            <p>{{ t('reviewer') }}: {{ row.reviewerId }}</p>
+            <p>
+              {{ t('validUntil') }}: {{ row.validUntil | date: 'medium' : undefined : i.locale() }}
+            </p>
+            <p>{{ t('manual') }}</p>
+            <ul>
+              @for (reference of row.evidenceRefs; track $index) {
+                <li>
+                  <code>{{ reference }}</code>
+                </li>
+              }
+            </ul>
+          </li>
+        }
+      </ol>
+      <details>
+        <summary>{{ t('history') }}</summary>
+        <ol>
+          @for (evaluation of data.evaluations; track evaluation.id) {
+            <li>
+              <time [attr.datetime]="evaluation.computedAt">{{
+                evaluation.computedAt | date: 'medium' : undefined : i.locale()
+              }}</time>
+              · {{ t('version') }} {{ evaluation.taskVersion }}
+              <ul>
+                @for (check of evaluation.checks; track check.id) {
+                  <li>{{ t(check.id) }}: {{ t(check.result) }}</li>
+                }
+              </ul>
+              <p>
+                {{ t('hash') }}: <code>{{ evaluation.contentHash }}</code>
+              </p>
+            </li>
+          }
+        </ol>
+      </details>
+    </section>
+  }
+</main>

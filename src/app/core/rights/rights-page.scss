@@ -1,0 +1,107 @@
+.rights-page {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  overflow-wrap: anywhere;
+}
+header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+.warning {
+  padding: 1rem;
+  background: var(--surface, #f3f0fb);
+  border-inline-start: 4px solid #6250aa;
+}
+.panel {
+  padding: 1rem;
+  border: 1px solid var(--border, #d8d3e5);
+  border-radius: 1rem;
+  margin: 1rem 0;
+}
+fieldset {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  margin: 1rem 0;
+}
+label {
+  display: block;
+  margin: 0.7rem 0;
+}
+input:not([type='checkbox']),
+select,
+textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0.7rem;
+  font: inherit;
+  color: inherit;
+  background: var(--surface, #fff);
+  border: 1px solid #777;
+  border-radius: 0.5rem;
+}
+.check {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  min-height: 48px;
+  padding: 0.7rem 0;
+}
+.check input {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+}
+button,
+a.button {
+  min-height: 48px;
+  white-space: normal;
+}
+.requests-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  list-style: none;
+  padding: 0;
+  gap: 1rem;
+}
+.requests-list > li {
+  padding: 1rem;
+  border: 1px solid var(--border, #d8d3e5);
+  border-radius: 0.6rem;
+}
+summary {
+  padding: 0.75rem 0;
+  cursor: pointer;
+  font-weight: 700;
+}
+code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+p {
+  white-space: pre-wrap;
+}
+li {
+  margin: 0.7rem 0;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #7154be;
+  outline-offset: 3px;
+}
+@media (max-width: 35rem) {
+  button,
+  a.button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,204 @@
+<main id="main" class="rights-page">
+  <header>
+    <a [routerLink]="['/workspace', tenantId()]">{{ copy.t('back') }}</a
+    ><app-display-preferences />
+  </header>
+  <h1>{{ copy.t('triageTitle') }}</h1>
+  <p class="warning">{{ copy.t('intro') }}</p>
+  <p role="alert">{{ copy.message(error()) }}</p>
+  <p role="status">{{ copy.message(status()) }} {{ loading() ? copy.t('loading') : '' }}</p>
+  <button
+    type="button"
+    class="button button--secondary"
+    (click)="load()"
+    [disabled]="busy() || loading()"
+  >
+    {{ copy.t('refresh') }}
+  </button>
+  @if (!canTriage()) {
+    <p>{{ copy.t('readOnly') }}</p>
+  }
+  <section>
+    <h2>{{ copy.t('requests') }}</h2>
+    @if (!requests().length) {
+      <p>{{ copy.t('empty') }}</p>
+    }
+    <ul class="requests-list">
+      @for (request of requests(); track request.id) {
+        <li>
+          <h3>{{ copy.t(request.kind) }} · {{ copy.t(request.status) }}</h3>
+          <p>{{ request.syntheticReference }} · {{ copy.t('version') }} {{ request.version }}</p>
+          <p>{{ request.assignee?.displayName ?? copy.t('ownerResponsibility') }}</p>
+          <a
+            class="button button--secondary"
+            [routerLink]="['/workspace', tenantId(), 'rights', request.id]"
+            >{{ copy.t('inspect') }}</a
+          >
+        </li>
+      }
+    </ul>
+  </section>
+  @if (selected(); as request) {
+    <section class="panel" aria-labelledby="request-heading">
+      <h2 #requestHeading id="request-heading" tabindex="-1">
+        {{ copy.t(request.kind) }} · {{ copy.t(request.status) }}
+      </h2>
+      <p>{{ request.id }} · {{ copy.t('version') }} {{ request.version }}</p>
+      <p [attr.lang]="request.inputLanguage">{{ request.details }}</p>
+      @if (request.correction; as change) {
+        <p>{{ copy.t('field') }}: {{ change.fieldReference }}</p>
+        <p>{{ copy.t('value') }}: {{ change.requestedValue }}</p>
+      }
+      <details>
+        <summary>{{ copy.t('source') }}</summary>
+        <p>
+          {{ request.source.noticeId }} · {{ request.source.noticeLanguage }} ·
+          {{ request.source.entryVersion }}
+        </p>
+      </details>
+      <p>{{ copy.t('manualNote') }}</p>
+      <h3>{{ copy.t('items') }}</h3>
+      <ul>
+        @for (item of request.workItems; track item.id) {
+          <li>
+            <h4>
+              {{ item.location.kind === 'unmapped' ? copy.t('unmapped') : item.location.name }}
+            </h4>
+            <p>{{ copy.t(item.status) }} · {{ copy.t('itemVersion') }} {{ item.version }}</p>
+            <p>{{ item.location.detail }}</p>
+            @if (item.relatedFollowupTaskId) {
+              <a
+                [routerLink]="['/workspace', tenantId(), 'followups', item.relatedFollowupTaskId]"
+                >{{ copy.t('related') }}</a
+              >
+              ·
+              <a [routerLink]="['/workspace', tenantId(), 'checks', item.relatedFollowupTaskId]">{{
+                copy.t('checks')
+              }}</a>
+            }
+          </li>
+        }
+      </ul>
+      @if (actions().length) {
+        <form [formGroup]="form" (ngSubmit)="act()">
+          <fieldset [disabled]="busy() || loading()">
+            <label for="rights-action">{{ copy.t('action') }}</label
+            ><select id="rights-action" formControlName="action">
+              @for (action of actions(); track action) {
+                <option [value]="action">{{ copy.t(action) }}</option>
+              }
+            </select>
+            @if (form.controls.action.value === 'assign') {
+              <label for="rights-assignee">{{ copy.t('assignment') }}</label
+              ><select id="rights-assignee" formControlName="assigneeId">
+                <option value="">{{ copy.t('ownerResponsibility') }}</option>
+                @for (assignee of assignees(); track assignee.id) {
+                  <option [value]="assignee.id">{{ assignee.displayName }}</option>
+                }
+              </select>
+            }
+            @if (itemAction()) {
+              <label for="rights-item">{{ copy.t('workItem') }}</label
+              ><select id="rights-item" formControlName="workItemId">
+                <option value="">—</option>
+                @for (item of request.workItems; track item.id) {
+                  <option [value]="item.id">
+                    {{
+                      item.location.kind === 'unmapped' ? copy.t('unmapped') : item.location.name
+                    }}
+                    · {{ copy.t(item.status) }}
+                  </option>
+                }
+              </select>
+            }
+            <label for="rights-note">{{ copy.t('internalNote') }}</label
+            ><textarea
+              id="rights-note"
+              formControlName="note"
+              rows="3"
+              [maxLength]="limits.note"
+            ></textarea
+            ><label for="rights-evidence">{{ copy.t('references') }}</label
+            ><textarea
+              id="rights-evidence"
+              formControlName="references"
+              rows="3"
+              aria-describedby="rights-evidence-help"
+            ></textarea>
+            <p id="rights-evidence-help">{{ copy.t('referenceHelp') }}</p>
+            @if (form.controls.action.value === 'respond') {
+              <label for="rights-response">{{ copy.t('responseText') }}</label
+              ><textarea
+                id="rights-response"
+                formControlName="responseText"
+                rows="4"
+                [maxLength]="limits.response"
+              ></textarea
+              ><label for="rights-response-language">{{ copy.t('responseLanguage') }}</label
+              ><select id="rights-response-language" formControlName="responseLanguage">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option></select
+              ><label for="rights-resolution">{{ copy.t('resolution') }}</label
+              ><select id="rights-resolution" formControlName="resolution">
+                <option value="complete">{{ copy.t('complete') }}</option>
+                <option value="partial">{{ copy.t('partial') }}</option>
+                <option value="blocked">{{ copy.t('blocked') }}</option></select
+              ><label class="check"
+                ><input type="checkbox" formControlName="responseAck" />{{
+                  copy.t('responseAck')
+                }}</label
+              >
+            }
+            @if (form.controls.action.value === 'close' && unresolved() > 0) {
+              <p>{{ copy.t('unresolved') }}: {{ unresolved() }}</p>
+              <label class="check"
+                ><input type="checkbox" formControlName="closeAck" />{{ copy.t('closeAck') }}</label
+              >
+            }
+            <label class="check"
+              ><input type="checkbox" formControlName="ack" />{{ copy.t('operatorAck') }}</label
+            ><button class="button button--primary" type="submit">
+              {{ busy() ? copy.t('busy') : copy.t('record') }}
+            </button>
+          </fieldset>
+        </form>
+      }
+      <h3>{{ copy.t('responses') }}</h3>
+      @for (response of request.responses; track response.id) {
+        <p [attr.lang]="response.language">
+          {{ copy.t(response.resolution) }} · {{ response.text }} · {{ copy.t('unresolved') }}
+          {{ response.unresolvedCount }}
+        </p>
+      }
+      <p>{{ copy.t('caseNote') }}</p>
+      <h3>{{ copy.t('audit') }}</h3>
+      <ol>
+        @for (event of request.history; track event.version) {
+          <li>
+            <strong
+              >{{ copy.t(event.action) }} · {{ copy.t('version') }} {{ event.version }}</strong
+            >
+            <p>{{ event.note }}</p>
+            <p>{{ copy.t('actor') }}: {{ event.actorId }}</p>
+            <time [attr.datetime]="event.at">{{
+              event.at | date: 'medium' : undefined : copy.i.locale()
+            }}</time>
+            <ul>
+              @for (reference of event.evidenceRefs; track $index) {
+                <li>
+                  <code>{{ reference }}</code>
+                </li>
+              }
+            </ul>
+            <details>
+              <summary>{{ copy.t('hash') }}</summary>
+              <p>{{ event.eventHash }}</p>
+              <p>{{ copy.t('previous') }}: {{ event.previousHash ?? '—' }}</p>
+            </details>
+          </li>
+        }
+      </ol>
+    </section>
+  }
+  <p>{{ copy.t('noExport') }}</p>
+</main>

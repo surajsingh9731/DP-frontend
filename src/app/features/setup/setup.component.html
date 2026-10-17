@@ -1,0 +1,251 @@
+<main id="main" tabindex="-1" class="setup-page">
+  <header class="setup-header">
+    <a class="brand" routerLink="/"
+      ><img src="/brand/mark.svg" alt="" width="36" height="36" /><span>Sahmati</span></a
+    >
+    <app-display-preferences />
+  </header>
+  <a class="back-link" [routerLink]="['/workspace', tenantId()]">← {{ t('back') }}</a>
+  <span class="eyebrow">{{ t('draftOnly') }}</span>
+  <h1>{{ t('title') }}</h1>
+  <p class="muted">{{ t('intro') }}</p>
+  <p class="notice">{{ t('warning') }}</p>
+  @if (loading()) {
+    <p role="status">{{ t('loading') }}</p>
+  } @else if (error() === 'unavailable') {
+    <p role="alert" class="form-error">{{ t('unavailable') }}</p>
+    <button class="button button--secondary" type="button" (click)="load()">
+      {{ i.t('retry') }}
+    </button>
+  } @else if (setup()?.status === 'completed') {
+    <section class="completion panel">
+      <h2>{{ t('completed') }}</h2>
+      <p>{{ t('completedBody') }}</p>
+      <a class="button button--primary" [routerLink]="['/workspace', tenantId(), 'register']">{{
+        t('openRegister')
+      }}</a>
+    </section>
+  } @else {
+    <ol class="setup-steps" [attr.aria-label]="t('step')">
+      @for (item of steps; track item) {
+        <li [attr.aria-current]="step() === item ? 'step' : null" [class.current]="step() === item">
+          <span aria-hidden="true">{{ item }}</span
+          >{{ stepLabel(item) }}
+        </li>
+      }
+    </ol>
+    @if (role() === 'viewer') {
+      <p class="notice">{{ t('viewer') }}</p>
+    }
+    @if (role() === 'staff') {
+      <p class="notice">{{ t('staff') }}</p>
+    }
+    @if (!setup() && !owner()) {
+      <p>{{ t('noDraft') }}</p>
+    } @else {
+      @if (setup(); as saved) {
+        <p class="small muted">{{ t('version') }} {{ saved.version }}</p>
+      }
+      @if (step() === 1) {
+        <section class="panel setup-panel" aria-labelledby="organisation-heading">
+          <h2 id="organisation-heading">{{ t('step1') }}</h2>
+          <form [formGroup]="organisation" (submit)="save(2); $event.preventDefault()" novalidate>
+            <fieldset [disabled]="!owner() || busy()">
+              <label for="setup-org">{{ t('organisationName') }}</label
+              ><input
+                id="setup-org"
+                formControlName="organisationName"
+                [maxlength]="setupLimits.organisationName"
+                aria-describedby="setup-org-hint setup-org-error"
+                [attr.aria-invalid]="
+                  organisation.controls.organisationName.touched &&
+                  organisation.controls.organisationName.invalid
+                "
+              />
+              <p class="field-hint" id="setup-org-hint">
+                {{ t('organisationHint') }} {{ t('limit') }}: {{ setupLimits.organisationName }}
+              </p>
+              <p class="form-error" id="setup-org-error">
+                @if (
+                  organisation.controls.organisationName.touched &&
+                  organisation.controls.organisationName.invalid
+                ) {
+                  {{ t('required') }}
+                }
+              </p>
+              <label for="setup-pack">{{ t('pack') }}</label
+              ><select
+                id="setup-pack"
+                formControlName="packId"
+                aria-describedby="setup-pack-hint setup-pack-error"
+                [attr.aria-invalid]="
+                  organisation.controls.packId.touched && organisation.controls.packId.invalid
+                "
+              >
+                <option value="">{{ t('choosePack') }}</option>
+                @for (pack of packs(); track pack.id) {
+                  <option [value]="pack.id" [disabled]="!pack.available">
+                    {{ packName(pack) }} — {{ t(pack.available ? 'available' : 'planned') }}
+                  </option>
+                }
+              </select>
+              <p id="setup-pack-hint" class="field-hint">{{ t('packsHint') }}</p>
+              <p class="form-error" id="setup-pack-error">
+                @if (organisation.controls.packId.touched && organisation.controls.packId.invalid) {
+                  {{ t('required') }}
+                }
+              </p>
+            </fieldset>
+            @if (owner()) {
+              <div class="setup-actions">
+                <button
+                  class="button button--secondary"
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="save(1)"
+                >
+                  {{ t('save') }}</button
+                ><button class="button button--primary" type="submit" [disabled]="busy()">
+                  {{ t(busy() ? 'saving' : 'continue') }}
+                </button>
+              </div>
+            }
+          </form>
+          @if (!owner() && setup()) {
+            <button
+              class="button button--secondary"
+              type="button"
+              [disabled]="busy()"
+              (click)="step.set(2)"
+            >
+              {{ t('step2') }}
+            </button>
+          }
+        </section>
+      }
+      @if (step() === 2) {
+        <section class="panel setup-panel" aria-labelledby="activity-heading">
+          <h2 id="activity-heading">{{ t('step2') }}</h2>
+          <form [formGroup]="form" (submit)="save(3); $event.preventDefault()" novalidate>
+            <fieldset [disabled]="!canEdit() || busy()">
+              @for (field of fields; track field) {
+                <div class="setup-field">
+                  <label [for]="'setup-' + field">{{ t(field) }}</label
+                  ><textarea
+                    [id]="'setup-' + field"
+                    [formControlName]="field"
+                    [maxlength]="limits[field]"
+                    rows="3"
+                    [attr.lang]="field === 'purposeEn' ? 'en' : field === 'purposeHi' ? 'hi' : null"
+                    [attr.aria-invalid]="
+                      form.controls[field].touched && form.controls[field].invalid
+                    "
+                    [attr.aria-describedby]="'setup-' + field + '-hint setup-' + field + '-error'"
+                  ></textarea>
+                  <p class="field-hint" [id]="'setup-' + field + '-hint'">
+                    {{ t('limit') }}: {{ limits[field] }}
+                    @if (field === 'dataCategories') {
+                      {{ t('categoriesHint') }}
+                    }
+                  </p>
+                  <p class="form-error" [id]="'setup-' + field + '-error'">
+                    @if (form.controls[field].touched && form.controls[field].invalid) {
+                      {{ t('required') }}
+                    }
+                  </p>
+                </div>
+              }
+            </fieldset>
+            <div class="setup-actions">
+              <button
+                class="button button--secondary"
+                type="button"
+                [disabled]="busy()"
+                (click)="previous()"
+              >
+                {{ t('previous') }}
+              </button>
+              @if (canEdit()) {
+                <button
+                  class="button button--secondary"
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="save(2)"
+                >
+                  {{ t('save') }}</button
+                ><button class="button button--primary" type="submit" [disabled]="busy()">
+                  {{ t(busy() ? 'saving' : 'continue') }}
+                </button>
+              } @else if (setup()?.draft) {
+                <button class="button button--secondary" type="button" (click)="showReview()">
+                  {{ t('next') }}
+                </button>
+              }
+            </div>
+          </form>
+        </section>
+      }
+      @if (step() === 3) {
+        <section class="panel setup-panel" aria-labelledby="review-heading">
+          <h2 id="review-heading">{{ t('step3') }}</h2>
+          <p>{{ t('reviewHint') }}</p>
+          <dl class="setup-review">
+            <div>
+              <dt>{{ t('organisationName') }}</dt>
+              <dd>{{ setup()?.organisationName }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('pack') }}</dt>
+              <dd>
+                @if (selectedPack(); as pack) {
+                  {{ packName(pack) }} · {{ pack.version }}
+                }
+              </dd>
+            </div>
+            @for (field of fields; track field) {
+              <div>
+                <dt>{{ t(field) }}</dt>
+                <dd
+                  [attr.lang]="field === 'purposeEn' ? 'en' : field === 'purposeHi' ? 'hi' : null"
+                >
+                  {{
+                    field === 'dataCategories'
+                      ? setup()?.draft?.dataCategories?.join(', ')
+                      : setup()?.draft?.[field]
+                  }}
+                </dd>
+              </div>
+            }
+          </dl>
+          <div class="setup-actions">
+            <button
+              class="button button--secondary"
+              type="button"
+              [disabled]="busy()"
+              (click)="previous()"
+            >
+              {{ t('previous') }}
+            </button>
+            @if (owner()) {
+              <button
+                class="button button--primary"
+                type="button"
+                [disabled]="busy() || !setup()?.draft"
+                (click)="complete()"
+              >
+                {{ t(busy() ? 'completing' : 'complete') }}
+              </button>
+            }
+          </div>
+        </section>
+      }
+    }
+    <p class="form-error" role="alert">{{ message(error()) }}</p>
+    <p class="status-message" role="status">{{ message(notice()) }}</p>
+    @if (error() === 'conflict') {
+      <button class="button button--secondary" type="button" [disabled]="busy()" (click)="load()">
+        {{ t('reload') }}
+      </button>
+    }
+  }
+</main>

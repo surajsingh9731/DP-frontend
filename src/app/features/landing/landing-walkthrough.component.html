@@ -1,0 +1,119 @@
+<section sahmatiCard class="story" aria-labelledby="story-heading">
+  <div class="story-top">
+    <span class="story-dot" aria-hidden="true"></span><span>{{ copy().illustration }}</span
+    ><span class="story-mark" aria-hidden="true">S</span>
+  </div>
+  <h2 id="story-heading">{{ copy().walkTitle }}</h2>
+  <p>{{ copy().walkIntro }}</p>
+  <div class="story-steps" role="group" [attr.aria-label]="copy().stepNav">
+    @for (item of steps; track item; let index = $index) {
+      <button
+        type="button"
+        [attr.aria-pressed]="step() === item"
+        [attr.aria-controls]="'story-panel'"
+        (click)="step.set(item)"
+      >
+        <span aria-hidden="true">0{{ index + 1 }}</span
+        >{{ copy()[item] }}
+      </button>
+    }
+  </div>
+  <div
+    id="story-panel"
+    class="story-panel"
+    role="region"
+    [attr.aria-label]="copy()[step()]"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    @for (active of [step()]; track active) {
+      <div class="story-scene">
+        <div class="scene-meta">
+          <span>{{ copy()[sector()] }}</span
+          ><span>{{ copy().stepOf }} {{ index() + 1 }} / 4</span>
+        </div>
+        @switch (active) {
+          @case ('map') {
+            <div class="map-flow" aria-hidden="true">
+              <span class="document"><i></i><i></i><i></i></span><span class="flow-line"></span
+              ><span class="purpose-node">✓</span>
+            </div>
+            <h3>{{ copy().mapTitle }}</h3>
+            <p>{{ story().reference }} → {{ copy().purpose }}</p>
+            <p>{{ copy().mapBody }}</p>
+            <span sahmatiTag="warning">{{ copy().unknown }}</span>
+          }
+          @case ('notice') {
+            <div class="notice-sheet">
+              <div class="sheet-bar"></div>
+              <strong>{{ copy().savedVersion }}</strong
+              ><span class="language-pair">English · हिंदी</span><span>{{ story().title }}</span
+              ><small>{{ copy().unreviewed }}</small>
+            </div>
+            <h3>{{ copy().noticeTitle }}</h3>
+            <p>{{ copy().noticeBody }}</p>
+          }
+          @case ('choice') {
+            <h3>{{ copy().choiceTitle }}</h3>
+            <p>{{ copy().choiceBody }}</p>
+            <div sahmatiCard class="choice-card">
+              <strong>{{ copy().purpose }}</strong>
+              <p class="choice-result">{{ copy()[choice()] }}</p>
+              <div class="choice-actions">
+                <button
+                  type="button"
+                  [sahmatiButton]="choice() === 'declined' ? 'primary' : 'secondary'"
+                  [attr.aria-pressed]="choice() === 'declined'"
+                  (click)="choice.set('declined')"
+                >
+                  {{ copy().decline }}</button
+                ><button
+                  type="button"
+                  [sahmatiButton]="choice() === 'allowed' ? 'primary' : 'secondary'"
+                  [attr.aria-pressed]="choice() === 'allowed'"
+                  (click)="choice.set('allowed')"
+                >
+                  {{ copy().allow }}
+                </button>
+              </div>
+            </div>
+            <p class="small-note">{{ copy().choiceNote }}</p>
+          }
+          @case ('review') {
+            <div class="review-flow">
+              <span>{{ copy().pending }}</span
+              ><span>{{ copy().response }}</span
+              ><span class="unresolved">{{ copy().unknown }}</span>
+            </div>
+            <h3>{{ copy().reviewTitle }}</h3>
+            <p>{{ copy().reviewBody }}</p>
+            <details>
+              <summary>{{ copy().why }}</summary>
+              <p>{{ copy().whyBody }}</p>
+            </details>
+          }
+        }
+      </div>
+    }
+  </div>
+  <div class="story-bottom">
+    <span>{{ copy().evidence }}</span>
+    <div>
+      <button
+        sahmatiButton="secondary"
+        type="button"
+        (click)="move(-1)"
+        [attr.aria-label]="copy().previousStep"
+      >
+        ←</button
+      ><button
+        sahmatiButton="secondary"
+        type="button"
+        (click)="move(1)"
+        [attr.aria-label]="copy().nextStep"
+      >
+        →
+      </button>
+    </div>
+  </div>
+</section>

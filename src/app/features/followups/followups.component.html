@@ -1,0 +1,182 @@
+<main id="main" class="followups-page">
+  <header>
+    <a [routerLink]="['/workspace', tenantId()]">{{ t('back') }}</a
+    ><a [routerLink]="['/workspace', tenantId(), 'consent-sandbox']">{{ t('consent') }}</a
+    ><app-display-preferences />
+  </header>
+  <h1>{{ t('title') }}</h1>
+  <p class="warning">{{ t('intro') }}</p>
+  <p>{{ t('warning') }}</p>
+  <p role="alert">{{ message(error()) }}</p>
+  <p role="status">{{ message(status()) }} {{ loading() ? t('loading') : '' }}</p>
+  <button
+    type="button"
+    class="button button--secondary"
+    (click)="load()"
+    [disabled]="loading() || busy()"
+  >
+    {{ t('refresh') }}
+  </button>
+  @if (!canAct()) {
+    <p>{{ t('readOnly') }}</p>
+  }
+  @if (owner()) {
+    <details class="panel">
+      <summary>{{ t('reconcile') }}</summary>
+      <label for="followup-receipt">{{ t('receipt') }}</label
+      ><select
+        id="followup-receipt"
+        [formControl]="receiptId"
+        [attr.aria-describedby]="'reconcile-note'"
+      >
+        <option value="">{{ t('chooseReceipt') }}</option>
+        @for (receipt of receipts(); track receipt.id) {
+          <option [value]="receipt.id">{{ receipt.syntheticReference }} · {{ receipt.id }}</option>
+        }
+      </select>
+      <p id="reconcile-note">{{ t('intro') }}</p>
+      <label class="check"
+        ><input type="checkbox" [formControl]="createAcknowledged" />{{ t('ack') }}</label
+      ><button
+        class="button button--secondary"
+        type="button"
+        (click)="create()"
+        [disabled]="loading() || busy()"
+      >
+        {{ t('create') }}
+      </button>
+    </details>
+  }
+  <section aria-labelledby="tasks-heading">
+    <h2 id="tasks-heading">{{ t('tasks') }} · {{ tasks().length }}</h2>
+    <p>{{ t('countNote') }}</p>
+    @if (!tasks().length) {
+      <p>{{ t('empty') }}</p>
+    }
+    <ul class="task-list">
+      @for (task of tasks(); track task.id) {
+        <li class="panel">
+          <h3>{{ location(task) }}</h3>
+          <p>
+            {{ t(task.location.kind) }} · {{ t(task.status) }} · {{ t('version') }}
+            {{ task.version }}
+          </p>
+          <p>{{ t('responsibility') }}: {{ task.assignee?.displayName ?? t('unassigned') }}</p>
+          <p class="reference">{{ t('receipt') }}: {{ task.receiptId }}</p>
+          <button
+            type="button"
+            class="button button--secondary"
+            (click)="select(task.id)"
+            [disabled]="loading() || busy()"
+            [attr.aria-label]="t('select') + ': ' + location(task)"
+          >
+            {{ t('select') }}
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+  @if (selected(); as task) {
+    <section class="panel" aria-labelledby="detail-heading">
+      <h2 id="detail-heading" #detailHeading tabindex="-1">
+        {{ t('detail') }} · {{ location(task) }}
+      </h2>
+      <p>{{ t(task.status) }} · {{ t('version') }} {{ task.version }} · {{ t('candidate') }}</p>
+      <dl>
+        <dt>ID</dt>
+        <dd>{{ task.id }}</dd>
+        <dt>{{ t('location') }}</dt>
+        <dd>{{ task.location.kind === 'unmapped' ? location(task) : task.location.detail }}</dd>
+        <dt>{{ t('responsibility') }}</dt>
+        <dd>{{ t(task.responsibleRole) }} · {{ task.assignee?.displayName ?? t('unassigned') }}</dd>
+      </dl>
+      <details>
+        <summary>{{ t('source') }}</summary>
+        <dl>
+          <dt>{{ t('receipt') }}</dt>
+          <dd>{{ task.receiptId }}</dd>
+          <dt>{{ t('receiptHash') }}</dt>
+          <dd>{{ task.receiptHash }}</dd>
+          <dt>{{ t('notice') }}</dt>
+          <dd>{{ task.noticeId }}</dd>
+          <dt>{{ t('registerVersion') }}</dt>
+          <dd>{{ task.entryVersion }}</dd>
+          <dt>{{ t('purposeIds') }}</dt>
+          <dd>{{ task.withdrawnPurposeIds.join(', ') }}</dd>
+          <dt>{{ t('retention') }}</dt>
+          <dd>{{ task.retentionNote }}</dd>
+        </dl>
+      </details>
+      @if (canAct() && actions().length) {
+        <form [formGroup]="form" (ngSubmit)="act()">
+          <fieldset [disabled]="loading() || busy()">
+            <label for="followup-action">{{ t('action') }}</label
+            ><select id="followup-action" formControlName="action">
+              @for (action of actions(); track action) {
+                <option [value]="action">{{ t(action) }}</option>
+              }
+            </select>
+            @if (form.controls.action.value === 'assign') {
+              <label for="followup-assignee">{{ t('assignee') }}</label
+              ><select id="followup-assignee" formControlName="assigneeId">
+                <option value="">{{ t('unassigned') }}</option>
+                @for (assignee of assignees(); track assignee.id) {
+                  <option [value]="assignee.id">
+                    {{ assignee.displayName }} · {{ t(assignee.role) }}
+                  </option>
+                }
+              </select>
+            }
+            <label for="followup-note">{{ t('note') }}</label
+            ><textarea
+              id="followup-note"
+              formControlName="note"
+              rows="3"
+              [maxLength]="limits.note"
+            ></textarea
+            ><label for="followup-evidence">{{ t('evidence') }}</label
+            ><textarea
+              id="followup-evidence"
+              formControlName="references"
+              rows="3"
+              aria-describedby="evidence-help"
+            ></textarea>
+            <p id="evidence-help">{{ t('evidenceHelp') }}</p>
+            <label class="check"
+              ><input type="checkbox" formControlName="ack" />{{ t('ack') }}</label
+            ><button class="button button--primary" type="submit">
+              {{ busy() ? t('busy') : t('save') }}
+            </button>
+          </fieldset>
+        </form>
+      }
+      <a [routerLink]="['/workspace', tenantId(), 'checks', task.id]">{{ i.t('localChecks') }}</a>
+      <h3>{{ t('history') }}</h3>
+      <ol class="history">
+        @for (event of task.history; track event.task.id + ':' + event.version) {
+          <li>
+            <h4>{{ t(event.action) }} · {{ t('version') }} {{ event.version }}</h4>
+            <p>{{ t(event.task.status) }}</p>
+            <time [attr.datetime]="event.occurredAt">{{
+              event.occurredAt | date: 'medium' : undefined : i.locale()
+            }}</time>
+            <p>{{ t('actor') }}: {{ event.actorId }}</p>
+            <p>{{ event.note }}</p>
+            <ul>
+              @for (reference of event.evidenceRefs; track $index) {
+                <li>
+                  <code>{{ reference }}</code>
+                </li>
+              }
+            </ul>
+            <details>
+              <summary>{{ t('hash') }}</summary>
+              <p>{{ event.eventHash }}</p>
+              <p>{{ t('previous') }}: {{ event.previousHash ?? '—' }}</p>
+            </details>
+          </li>
+        }
+      </ol>
+    </section>
+  }
+</main>
