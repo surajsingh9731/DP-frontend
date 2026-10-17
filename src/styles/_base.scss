@@ -1,0 +1,88 @@
+// Base element rules. Kept separate from tokens so a future authenticated
+// shell can reuse the tokens without inheriting public-shell-specific base
+// rules (none here yet, but keeps the files single-purpose — SOLID).
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  // calc() lets the public shell's text-size toggle scale every rem-based
+  // size on the page without touching component styles individually.
+  font-size: calc(var(--font-size-base) * var(--text-scale));
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-surface-alt);
+  color: var(--color-ink-900);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: var(--line-height-heading);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-primary-700);
+}
+
+img,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+// GIGW/WCAG: never remove a focus ring without a visible replacement.
+// Applied globally so no component can regress this.
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+// Visually-hidden-until-focused "skip to main content" link.
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--color-primary-700);
+  color: #fff;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0 0 var(--radius-sm) 0;
+  font-weight: var(--font-weight-semibold);
+
+  &:focus-visible {
+    left: 0;
+  }
+}
+
+// Respect both the OS-level and in-app reduce-motion preference for any
+// rule that didn't opt in to a specific duration token.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

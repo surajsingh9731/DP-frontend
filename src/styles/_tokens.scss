@@ -1,0 +1,111 @@
+// Sahmati design tokens — UX4G-aligned (gov.in visual language), judgment-based
+// (see docs/architecture/R1-ui-ux-plan.md §2/§6: no design-system search tool
+// was available in this environment, so these are hand-built per the plan's
+// priority table, not a retrieved UX4G component match).
+//
+// Every text/background pair below was verified against WCAG 2.1 contrast
+// math (see docs/architecture/landing-page-accessibility-checklist.md for
+// the computed ratios) rather than assumed — the plan flags some gov design
+// system defaults (amber/warning especially) as AA-borderline, so nothing
+// here is used unverified.
+
+:root {
+  // ---- Color: neutrals / ink ----------------------------------------
+  --color-ink-900: #1a1a2e; // primary text — 17.1:1 on surface
+  --color-ink-700: #44475a; // secondary text — 9.2:1 on surface
+  --color-border: #d7dbe3;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f4f6fb; // section backgrounds, cards
+
+  // ---- Color: primary (UX4G government blue) ------------------------
+  --color-primary-900: #072a66; // hover/active state
+  --color-primary-700: #0b3d91; // base — 10.0:1 on white
+  --color-primary-100: #d7e9ff; // tint background for info/primary chips
+
+  // ---- Color: semantic status (never used color-alone; always + icon/text) --
+  --color-success-700: #146c33; // 6.5:1 on white, 5.7:1 on success-100
+  --color-success-100: #e3f3e8;
+
+  --color-warning-700: #8a5800; // 6.0:1 on white, 5.5:1 on warning-100
+  --color-warning-100: #fff3d6;
+
+  --color-danger-700: #b3261e; // 6.5:1 on white, 5.4:1 on danger-100
+  --color-danger-100: #fbe4e1;
+
+  --color-info-700: var(--color-primary-700);
+  --color-info-100: var(--color-primary-100);
+
+  // ---- Typography -----------------------------------------------------
+  // Mukta: one family for Latin + Devanagari (brief's own choice), so
+  // switching language never changes the type rhythm of the page.
+  --font-family-base: 'Mukta', 'Noto Sans Devanagari', system-ui, sans-serif;
+
+  --font-size-base: 16px; // GIGW/WCAG floor — never smaller for body text
+  --font-size-sm: 0.875rem; // 14px — captions/meta only, never body copy
+  --font-size-md: 1rem; // 16px
+  --font-size-lg: 1.125rem; // 18px
+  --font-size-xl: 1.375rem; // 22px
+  --font-size-2xl: 1.75rem; // 28px
+  --font-size-3xl: 2.25rem; // 36px
+
+  // 1.5 is the WCAG 1.4.12 floor and the plan's own figure for Hindi
+  // line-wrapping; Devanagari conjuncts need the extra vertical room.
+  --line-height-base: 1.5;
+  --line-height-heading: 1.25;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  // Scales body text up for the public shell's text-size toggle
+  // (brief §13.5 "large-text mode" for parent/public users on small phones).
+  --text-scale: 1;
+
+  // ---- Spacing (4px base scale) ---------------------------------------
+  --space-1: 0.25rem; // 4px
+  --space-2: 0.5rem; // 8px
+  --space-3: 0.75rem; // 12px
+  --space-4: 1rem; // 16px
+  --space-6: 1.5rem; // 24px
+  --space-8: 2rem; // 32px
+  --space-12: 3rem; // 48px
+  --space-16: 4rem; // 64px
+
+  // ---- Shape / elevation ------------------------------------------------
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --shadow-card: 0 1px 2px rgba(26, 26, 46, 0.06), 0 2px 8px rgba(26, 26, 46, 0.08);
+
+  // ---- Interaction ------------------------------------------------------
+  // GIGW/WCAG touch target floor (plan's priority #2): every control uses
+  // this as its min box, never relying on visual size alone.
+  --touch-target-min: 44px;
+  --focus-ring-color: var(--color-primary-900);
+  --focus-ring-width: 3px;
+
+  // Motion: informational only, never decorative (plan priority #7).
+  // `--motion-duration` collapses to near-zero when a viewer's OS or the
+  // in-app reduce-motion toggle (public shell) asks for it.
+  --motion-duration: 180ms;
+  --motion-easing: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration: 0.01ms;
+  }
+}
+
+// In-app "reduce motion" override (public shell toggle), independent of OS
+// setting, per plan priority #7 / brief §13.5.
+:root[data-motion='reduced'] {
+  --motion-duration: 0.01ms;
+}
+
+// Public shell text-size toggle (independent of browser zoom, for
+// one-tap large text on a small phone screen).
+:root[data-text-size='large'] {
+  --text-scale: 1.25;
+}

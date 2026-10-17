@@ -1,0 +1,31 @@
+<a class="skip-link" href="#main-content">{{ copy().skip }}</a>
+
+<div class="public-shell">
+  <header class="public-shell__bar">
+    <div class="public-shell__bar-start">
+      @if (!isHome()) {
+        <a class="public-shell__back" routerLink="/">
+          <span aria-hidden="true">←</span>
+          {{ copy().backToHome }}
+        </a>
+      }
+    </div>
+
+    <div class="public-shell__bar-end">
+      <button
+        type="button"
+        class="public-shell__text-size"
+        [attr.aria-pressed]="textSize() === 'large'"
+        [attr.aria-label]="textSize() === 'large' ? copy().normalText : copy().largerText"
+        (click)="toggleTextSize()"
+      >
+        <span aria-hidden="true">A+</span>
+      </button>
+      <app-language-toggle />
+    </div>
+  </header>
+
+  <main id="main-content" class="public-shell__main" tabindex="-1">
+    <router-outlet />
+  </main>
+</div>

@@ -1,0 +1,88 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.public-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.public-shell__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.public-shell__bar-start,
+.public-shell__bar-end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-target-min);
+}
+
+.public-shell__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-primary-700);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.public-shell__text-size {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-ink-900);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+
+  &[aria-pressed='true'] {
+    background: var(--color-primary-100);
+    color: var(--color-primary-900);
+  }
+
+  &:hover {
+    background: var(--color-surface-alt);
+  }
+}
+
+// Single column, never a horizontal scroll (plan §5/§1 — notice/QR text
+// must reflow, which this width ceiling guarantees for any content).
+.public-shell__main {
+  flex: 1;
+  width: 100%;
+  // Wide enough for a marketing landing page; a narrower public screen
+  // (notice, OTP) constrains its own inner content further rather than
+  // the shell doing it for every page.
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-16);
+
+  &:focus-visible {
+    outline: none; // the skip-link target shouldn't show a stray ring on load
+  }
+}

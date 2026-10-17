@@ -1,0 +1,20 @@
+/* Global styles. Design tokens and base element rules live in src/styles/
+   so they can be reused by the authenticated shell later without
+   duplicating the Angular build config (SOLID: one source of truth). */
+
+@use 'styles/tokens';
+@use 'styles/base';
+@use 'styles/buttons';
+
+// Self-hosted Mukta (Latin + Devanagari) — no third-party font CDN request,
+// which keeps the public/no-login path (brief NFR: <3s on 3G) free of an
+// extra cross-origin round trip and matches the plan's "no CDN dependency
+// on the public path" intent.
+@import '@fontsource/mukta/400.css';
+@import '@fontsource/mukta/500.css';
+@import '@fontsource/mukta/600.css';
+@import '@fontsource/mukta/700.css';
+@import '@fontsource/mukta/devanagari-400.css';
+@import '@fontsource/mukta/devanagari-500.css';
+@import '@fontsource/mukta/devanagari-600.css';
+@import '@fontsource/mukta/devanagari-700.css';
