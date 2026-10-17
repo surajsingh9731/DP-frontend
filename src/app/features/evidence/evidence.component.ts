@@ -17,6 +17,7 @@ import { combineLatest, firstValueFrom, forkJoin, of } from 'rxjs';
 import type { EvidencePage, EvidenceDetail, EvidenceFilters } from '@sahmati/contracts';
 import { EvidenceApi } from '../../core/evidence-api.service';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import {
   EVIDENCE_KINDS,
   EVIDENCE_PROVENANCE,
@@ -27,7 +28,13 @@ import type { EvidenceTextKey } from './locales/en';
 import { evidenceFiltersForm } from './evidence.forms';
 @Component({
   selector: 'app-evidence',
-  imports: [DatePipe, ReactiveFormsModule, RouterLink, DisplayPreferencesComponent],
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    RouterLink,
+    DisplayPreferencesComponent,
+    StatusBannerComponent,
+  ],
   templateUrl: './evidence.component.html',
   styleUrl: './evidence.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

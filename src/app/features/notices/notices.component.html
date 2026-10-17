@@ -21,8 +21,7 @@
     </button>
   </div>
   <p class="notices-warning">{{ t('disclaimer') }}</p>
-  <p class="form-error" role="alert">{{ message(error()) }}</p>
-  <p class="status-message" role="status">{{ message(notice()) }}</p>
+  <app-status-banner [errorText]="message(error())" [statusText]="message(notice())" />
   @if (loading()) {
     <p role="status">{{ t('loading') }}</p>
   } @else if (error() !== 'unavailable') {

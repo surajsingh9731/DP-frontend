@@ -8,6 +8,7 @@ import {
   resetReferences,
 } from '../../core/registry-references/registry-references.form';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
@@ -36,6 +37,7 @@ import { REGISTER_FIELDS, REGISTER_LIMITS } from '../../constants/register.const
     ReactiveFormsModule,
     RouterLink,
     DatePipe,
+    StatusBannerComponent,
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',

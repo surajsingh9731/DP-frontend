@@ -8,8 +8,7 @@
   <h1>{{ t('title') }}</h1>
   <p>{{ t('intro') }}</p>
   <p class="warning">{{ t('warning') }}</p>
-  <p role="alert" class="form-error">{{ message(error()) }}</p>
-  <p role="status" class="status-message">{{ message(notice()) }}</p>
+  <app-status-banner [errorText]="message(error())" [statusText]="message(notice())" />
   <div class="actions">
     <button
       class="button button--secondary"

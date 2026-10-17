@@ -7,8 +7,12 @@
   <h1>{{ t('title') }}</h1>
   <p class="warning">{{ t('intro') }}</p>
   <p>{{ t('warning') }}</p>
-  <p role="alert">{{ message(error()) }}</p>
-  <p role="status">{{ message(status()) }} {{ loading() ? t('loading') : '' }}</p>
+  <app-status-banner
+    [errorText]="message(error())"
+    [statusText]="message(status())"
+    [loading]="loading()"
+    [loadingText]="t('loading')"
+  />
   <button
     type="button"
     class="button button--secondary"

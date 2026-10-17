@@ -23,6 +23,7 @@ import { Api } from '../../core/api.service';
 import { PreparationApi } from '../../core/preparation-api.service';
 import { I18n } from '../../core/i18n.service';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { storedActionKey } from '../../core/commands/stored-action-key';
 import {
   PREPARATION_LIMITS,
@@ -35,7 +36,13 @@ import { PREPARATION_HI } from './preparation.hi';
 @Component({
   selector: 'app-preparation',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule, RouterLink, DisplayPreferencesComponent],
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    RouterLink,
+    DisplayPreferencesComponent,
+    StatusBannerComponent,
+  ],
   templateUrl: './preparation.component.html',
   styleUrl: './preparation.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -19,6 +19,7 @@ import { RightsCopy } from '../../core/rights/rights-copy.service';
 import type { RightsTextKey } from '../../core/rights/rights.en';
 import { RightsPublicCardComponent } from '../../core/rights/rights-public-card.component';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { storedActionKey } from '../../core/commands/stored-action-key';
 import { RIGHTS_KEY_PREFIX, RIGHTS_KINDS, RIGHTS_LIMITS } from '../../constants/rights.constants';
 import { participantRightsForm } from './rights-participant.forms';
@@ -30,6 +31,7 @@ import { participantRightsForm } from './rights-participant.forms';
     RouterLink,
     DisplayPreferencesComponent,
     RightsPublicCardComponent,
+    StatusBannerComponent,
   ],
   templateUrl: './rights-participant.component.html',
   styleUrl: './rights-participant.component.scss',

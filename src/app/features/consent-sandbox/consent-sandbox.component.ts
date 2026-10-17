@@ -24,6 +24,7 @@ import { ConsentApi } from '../../core/consent-api.service';
 import { NoticesApi } from '../../core/notices-api.service';
 import { I18n } from '../../core/i18n.service';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { storedActionKey } from '../../core/commands/stored-action-key';
 import { CONSENT_KEY_PREFIX, CONSENT_LIMITS } from '../../constants/consent.constants';
 import { offerForm, purposeForm, choiceForms } from './consent.forms';
@@ -38,6 +39,7 @@ import { ConsentReceiptComponent } from './consent-receipt.component';
     RouterLink,
     DisplayPreferencesComponent,
     ConsentReceiptComponent,
+    StatusBannerComponent,
   ],
   templateUrl: './consent-sandbox.component.html',
   styleUrl: './consent-sandbox.component.scss',

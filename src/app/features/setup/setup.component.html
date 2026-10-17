@@ -240,8 +240,7 @@
         </section>
       }
     }
-    <p class="form-error" role="alert">{{ message(error()) }}</p>
-    <p class="status-message" role="status">{{ message(notice()) }}</p>
+    <app-status-banner [errorText]="message(error())" [statusText]="message(notice())" />
     @if (error() === 'conflict') {
       <button class="button button--secondary" type="button" [disabled]="busy()" (click)="load()">
         {{ t('reload') }}

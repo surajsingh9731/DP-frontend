@@ -26,6 +26,7 @@ import { FollowupsApi } from '../../core/followups-api.service';
 import { ConsentApi } from '../../core/consent-api.service';
 import { I18n } from '../../core/i18n.service';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { storedActionKey } from '../../core/commands/stored-action-key';
 import { FOLLOWUP_KEY_PREFIX, FOLLOWUP_LIMITS } from '../../constants/followups.constants';
 import { followupActionForm, followupActions, followupReferences } from './followups.forms';
@@ -33,7 +34,13 @@ import { FOLLOWUPS_EN, type FollowupsTextKey } from './followups.en';
 import { FOLLOWUPS_HI } from './followups.hi';
 @Component({
   selector: 'app-followups',
-  imports: [DatePipe, ReactiveFormsModule, RouterLink, DisplayPreferencesComponent],
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    RouterLink,
+    DisplayPreferencesComponent,
+    StatusBannerComponent,
+  ],
   templateUrl: './followups.component.html',
   styleUrl: './followups.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -6,8 +6,11 @@
   <h1>{{ copy.t('title') }}</h1>
   <p class="warning">{{ copy.t('intro') }}</p>
   <p>{{ copy.t('scope') }}</p>
-  <p role="alert">{{ copy.message(error()) }}</p>
-  <p role="status">{{ loading() ? copy.t('loading') : '' }}</p>
+  <app-status-banner
+    [errorText]="copy.message(error())"
+    [loading]="loading()"
+    [loadingText]="copy.t('loading')"
+  />
   <form [formGroup]="form" (ngSubmit)="apply()">
     <fieldset [disabled]="loading()">
       <label for="evidence-search">{{ copy.t('search') }}</label

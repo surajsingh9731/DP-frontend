@@ -23,10 +23,12 @@
       </button>
     </div>
     <p class="register-warning">{{ t('warning') }}</p>
-    <p role="alert" class="form-error">{{ message(error()) }}</p>
-    <p role="status" class="status-message">
-      {{ message(notice()) }}{{ loading() ? t('loading') : '' }}
-    </p>
+    <app-status-banner
+      [errorText]="message(error())"
+      [statusText]="message(notice())"
+      [loading]="loading()"
+      [loadingText]="t('loading')"
+    />
     <div class="register-grid">
       <section class="panel register-list" aria-labelledby="draft-list-title">
         <div class="panel__heading">

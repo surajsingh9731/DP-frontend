@@ -4,6 +4,7 @@ import {
 } from '../../core/forms/register-fields.form';
 import { requiredTextControl } from '../../core/forms/required-text-control';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -25,7 +26,7 @@ import { SETUP_HI } from './setup.hi';
 @Component({
   selector: 'app-setup',
   standalone: true,
-  imports: [DisplayPreferencesComponent, ReactiveFormsModule, RouterLink],
+  imports: [DisplayPreferencesComponent, ReactiveFormsModule, RouterLink, StatusBannerComponent],
   templateUrl: './setup.component.html',
   styleUrl: './setup.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

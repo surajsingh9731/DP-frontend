@@ -18,6 +18,7 @@ import { I18n } from '../../core/i18n.service';
 import { RegisterApi } from '../../core/register-api.service';
 import { NoticesApi, type DecideNotice } from '../../core/notices-api.service';
 import { DisplayPreferencesComponent } from '../../core/display-preferences/display-preferences.component';
+import { StatusBannerComponent } from '../../core/ui/status-banner/status-banner.component';
 import {
   NOTICE_COMMENT_LIMIT,
   NOTICE_LANGUAGES,
@@ -30,7 +31,13 @@ import { NOTICES_HI } from './notices.hi';
 @Component({
   selector: 'app-notices',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DatePipe, DisplayPreferencesComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    DatePipe,
+    DisplayPreferencesComponent,
+    StatusBannerComponent,
+  ],
   templateUrl: './notices.component.html',
   styleUrl: './notices.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
