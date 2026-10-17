@@ -1,0 +1,105 @@
+<section class="hero">
+  <p class="hero__eyebrow">{{ copy().eyebrow }}</p>
+  <h1 class="hero__heading">{{ copy().heading }}</h1>
+  <p class="hero__subheading">{{ copy().subheading }}</p>
+
+  <div class="hero__ctas">
+    <!-- TODO: route to the real signup flow once the auth module (module A) ships. -->
+    <a routerLink="/get-started" class="button button--primary">{{ copy().ctaPrimary }}</a>
+    <span class="hero__secondary">
+      {{ copy().ctaSecondaryLead }}
+      <!-- TODO: route to the real login flow once the auth module (module A) ships. -->
+      <a routerLink="/sign-in" class="button button--link">{{ copy().ctaSecondaryAction }}</a>
+    </span>
+  </div>
+
+  <ul class="trust-strip">
+    @for (item of copy().trustStrip; track item) {
+      <li class="trust-strip__item">
+        <svg class="trust-strip__icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+          <path d="M7.5 13.5 4 10l1.4-1.4L7.5 10.7l7.1-7.1L16 5z" fill="currentColor" />
+        </svg>
+        {{ item }}
+      </li>
+    }
+  </ul>
+</section>
+
+<section class="modules" aria-labelledby="modules-heading">
+  <h2 id="modules-heading" class="section-heading">{{ copy().modulesHeading }}</h2>
+  <p class="section-subheading">{{ copy().modulesSubheading }}</p>
+
+  <ul class="modules__grid">
+    @for (module of copy().modules; track module.title) {
+      <li class="module-card">
+        <span class="module-card__icon" aria-hidden="true" [attr.data-icon]="module.icon">
+          @switch (module.icon) {
+            @case ('register') {
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path fill="currentColor" d="M4 4h16v2H4zm0 5h16v2H4zm0 5h10v2H4zm0 5h10v2H4z" />
+              </svg>
+            }
+            @case ('notice') {
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M5 3h10l4 4v14H5zm9 1.5V8h3.5zM7 11h10v2H7zm0 4h10v2H7z"
+                />
+              </svg>
+            }
+            @case ('consent') {
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path fill="currentColor" d="m9.5 16.5-4-4L7 11l2.5 2.5L17 6l1.5 1.5z" />
+              </svg>
+            }
+            @case ('rights') {
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M12 2 4 5v6c0 5 3.4 8.3 8 11 4.6-2.7 8-6 8-11V5zm0 2.2 6 2.2v4.1c0 3.8-2.4 6.4-6 8.6-3.6-2.2-6-4.8-6-8.6V6.4z"
+                />
+              </svg>
+            }
+            @case ('breach') {
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path fill="currentColor" d="M12 2 1 21h22zm0 6 1.2 6.2h-2.4zm-1 8h2v2h-2z" />
+              </svg>
+            }
+            @case ('retention') {
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8zm-1 4v6l5 3 1-1.7-4.2-2.5V6z"
+                />
+              </svg>
+            }
+          }
+        </span>
+        <h3 class="module-card__title">{{ module.title }}</h3>
+        <p class="module-card__description">{{ module.description }}</p>
+      </li>
+    }
+  </ul>
+</section>
+
+<section class="audience" aria-labelledby="audience-heading">
+  <h2 id="audience-heading" class="section-heading">{{ copy().audienceHeading }}</h2>
+
+  <ul class="audience__grid">
+    @for (group of copy().audience; track group.title) {
+      <li class="audience-card">
+        <h3 class="audience-card__title">{{ group.title }}</h3>
+        <p class="audience-card__description">{{ group.description }}</p>
+      </li>
+    }
+  </ul>
+</section>
+
+<section class="closing">
+  <h2 class="closing__heading">{{ copy().closingHeading }}</h2>
+  <p class="closing__body">{{ copy().closingBody }}</p>
+  <div class="closing__ctas">
+    <a routerLink="/get-started" class="button button--secondary">{{ copy().ctaPrimary }}</a>
+    <a routerLink="/sign-in" class="closing__secondary-link">{{ copy().ctaSecondaryAction }}</a>
+  </div>
+</section>

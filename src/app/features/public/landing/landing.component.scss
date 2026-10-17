@@ -1,0 +1,225 @@
+:host {
+  display: block;
+}
+
+// `.button` and its variants are defined globally in src/styles/_buttons.scss
+// so this page and `coming-soon.component` share one implementation (DRY).
+
+.section-heading {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-2);
+}
+
+.section-subheading {
+  color: var(--color-ink-700);
+  max-width: 42rem;
+  margin-bottom: var(--space-8);
+}
+
+// ---- Hero -----------------------------------------------------------------
+.hero {
+  padding: var(--space-8) 0 var(--space-12);
+  text-align: left;
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-primary-100);
+  color: var(--color-primary-900);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-4);
+}
+
+.hero__heading {
+  font-size: var(--font-size-3xl);
+  color: var(--color-ink-900);
+  max-width: 44rem;
+  margin-bottom: var(--space-4);
+}
+
+.hero__subheading {
+  font-size: var(--font-size-lg);
+  color: var(--color-ink-700);
+  max-width: 40rem;
+  margin-bottom: var(--space-6);
+}
+
+.hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.hero__secondary {
+  color: var(--color-ink-700);
+}
+
+.trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.trust-strip__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-ink-700);
+  font-size: var(--font-size-sm);
+}
+
+.trust-strip__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  color: var(--color-success-700);
+}
+
+// ---- Modules ----------------------------------------------------------
+.modules {
+  padding: var(--space-12) 0;
+}
+
+.modules__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @media (min-width: 40rem) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 64rem) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.module-card {
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.module-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-100);
+  color: var(--color-primary-900);
+
+  svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+}
+
+.module-card__title {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-2);
+}
+
+.module-card__description {
+  color: var(--color-ink-700);
+}
+
+// ---- Audience -----------------------------------------------------------
+.audience {
+  padding: var(--space-12) 0;
+}
+
+.audience__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.audience-card {
+  padding: var(--space-6);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-lg);
+}
+
+.audience-card__title {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--space-2);
+}
+
+.audience-card__description {
+  color: var(--color-ink-700);
+}
+
+// ---- Closing CTA ----------------------------------------------------------
+.closing {
+  margin: var(--space-8) 0 var(--space-4);
+  padding: var(--space-12) var(--space-6);
+  background: var(--color-primary-700);
+  border-radius: var(--radius-lg);
+  color: #fff;
+  text-align: center;
+}
+
+.closing__heading {
+  font-size: var(--font-size-2xl);
+  color: #fff;
+  margin-bottom: var(--space-3);
+}
+
+.closing__body {
+  color: #fff;
+  max-width: 36rem;
+  margin: 0 auto var(--space-6);
+}
+
+.closing__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.closing__secondary-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-2);
+  color: #fff;
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+// The default focus ring color (--color-primary-900) only reaches ~1.4:1
+// against this section's primary-700 background, which fails the WCAG
+// 1.4.11 non-text contrast floor (3:1) — override to white here, which
+// clears 10:1 against primary-700 (see the accessibility checklist doc).
+.closing :focus-visible {
+  outline-color: #fff;
+}
