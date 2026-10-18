@@ -1,0 +1,72 @@
+<div class="my-requests">
+  <h1 class="my-requests__title">{{ copy().title }}</h1>
+
+  <form (ngSubmit)="submit()" novalidate class="my-requests__form">
+    <div class="field">
+      <label class="field__label" for="kind">{{ copy().kindLabel }}</label>
+      <select id="kind" class="input" [ngModel]="kind()" (ngModelChange)="kind.set($event)" name="kind">
+        @for (k of kinds; track k) {
+          <option [value]="k">{{ copy().kinds[k] }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="details">{{ copy().detailsLabel }}</label>
+      <textarea
+        id="details"
+        class="input"
+        rows="4"
+        [ngModel]="details()"
+        (ngModelChange)="details.set($event)"
+        name="details"
+        [placeholder]="copy().detailsPlaceholder"
+      ></textarea>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="field__error" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button
+      type="submit"
+      class="button button--primary button--lg"
+      [disabled]="submitting()"
+      style="width: 100%"
+    >
+      {{ submitting() ? copy().submitting : copy().submit }}
+    </button>
+  </form>
+
+  <h2 class="my-requests__history-title">{{ copy().historyTitle }}</h2>
+
+  @if (loadingRequests()) {
+    <p class="field__hint">{{ copy().loading }}</p>
+  } @else if (requests().length === 0) {
+    <p class="field__hint">{{ copy().none }}</p>
+  } @else {
+    <ul class="my-requests__list">
+      @for (request of requests(); track request.id) {
+        <li class="my-requests__item">
+          <div class="my-requests__item-head">
+            <span class="my-requests__kind">{{ copy().kinds[request.kind] }}</span>
+            <span class="my-requests__status" [attr.data-status]="request.status">
+              {{ copy().status[request.status] }}
+            </span>
+          </div>
+          <p class="my-requests__details">{{ request.details }}</p>
+          @if (request.responseText) {
+            <p class="my-requests__response">{{ request.responseText }}</p>
+          }
+          @if (request.status !== 'closed' && request.status !== 'responded') {
+            <p class="my-requests__due">{{ copy().dueBy }}: {{ request.dueAt | date: 'mediumDate' }}</p>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  <p class="my-requests__back">
+    <a [routerLink]="['/', orgSlug]">{{ copy().backLink }}</a>
+  </p>
+</div>

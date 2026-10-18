@@ -127,6 +127,20 @@ export interface PublicNoticeView {
   bodyEn?: string;
   bodyHi?: string;
   publishedAt?: string;
+  contactName?: string | null;
+  contactRole?: string | null;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
+}
+
+/** A single purpose's current state for the public "My consent" view. */
+export interface ConsentStatusItem {
+  registerEntryId: string;
+  purposeEn: string;
+  purposeHi: string;
+  categoryLabel: { en: string; hi: string };
+  decision: ConsentDecision | null;
+  occurredAt: string | null;
 }
 
 // ---------------------------------------------------------------------------

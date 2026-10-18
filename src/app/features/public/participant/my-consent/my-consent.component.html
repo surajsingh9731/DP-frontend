@@ -1,0 +1,68 @@
+<div class="my-consent">
+  <h1 class="my-consent__title">{{ copy().title }}</h1>
+
+  @if (loading()) {
+    <p class="field__hint">{{ copy().loading }}</p>
+  } @else if (!available()) {
+    <p class="field__hint">{{ copy().unavailable }}</p>
+  } @else {
+    @if (successMessage()) {
+      <p class="my-consent__success" role="status">{{ successMessage() }}</p>
+    }
+    @if (errorMessage()) {
+      <p class="field__error" role="alert">{{ errorMessage() }}</p>
+    }
+
+    @if (items().length === 0) {
+      <p class="field__hint">{{ copy().noPurposes }}</p>
+    }
+
+    <ul class="my-consent__list">
+      @for (item of items(); track item.registerEntryId) {
+        <li class="my-consent__item">
+          <div class="my-consent__item-body">
+            <p class="my-consent__purpose">
+              {{ language() === 'hi' ? item.purposeHi : item.purposeEn }}
+            </p>
+            <span
+              class="my-consent__status"
+              [attr.data-decision]="item.decision ?? 'pending'"
+            >
+              {{
+                item.decision === 'accept'
+                  ? copy().given
+                  : item.decision === 'decline'
+                    ? copy().declined
+                    : copy().notDecided
+              }}
+            </span>
+          </div>
+
+          @if (item.decision === 'accept') {
+            <button
+              type="button"
+              class="button button--secondary"
+              [disabled]="busyId() === item.registerEntryId"
+              (click)="withdraw(item)"
+            >
+              {{ copy().withdraw }}
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="button button--primary"
+              [disabled]="busyId() === item.registerEntryId"
+              (click)="giveConsent(item)"
+            >
+              {{ copy().giveConsent }}
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  <p class="my-consent__back">
+    <a [routerLink]="['/', orgSlug]">{{ copy().backLink }}</a>
+  </p>
+</div>

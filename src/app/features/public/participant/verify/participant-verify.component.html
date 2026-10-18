@@ -1,0 +1,97 @@
+<app-auth-card
+  [eyebrow]="language() === 'hi' ? 'सहमति' : 'Sahmati'"
+  [title]="title()"
+  [subtitle]="subtitle()"
+>
+  @if (step() === 'identifier') {
+    <form (ngSubmit)="sendCode()" novalidate>
+      <div class="field">
+        <label class="field__label" for="identifier">
+          {{ language() === 'hi' ? 'मोबाइल नंबर या ईमेल' : 'Mobile number or email' }}
+        </label>
+        <input
+          id="identifier"
+          class="input"
+          type="text"
+          autocomplete="email"
+          [ngModel]="identifier()"
+          (ngModelChange)="identifier.set($event)"
+          name="identifier"
+          [placeholder]="language() === 'hi' ? '+91 98110 45672' : '+91 98110 45672 or you@example.com'"
+        />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button
+        type="submit"
+        class="button button--primary button--lg"
+        [disabled]="submitting()"
+        style="width: 100%"
+      >
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'भेजा जा रहा है…'
+              : 'Sending…'
+            : language() === 'hi'
+              ? 'कोड भेजें'
+              : 'Send code'
+        }}
+      </button>
+    </form>
+  } @else {
+    <form (ngSubmit)="confirmCode()" novalidate>
+      <div class="field">
+        <label class="field__label" for="code">{{
+          language() === 'hi' ? '6 अंकों का कोड' : '6-digit code'
+        }}</label>
+        <input
+          id="code"
+          class="otp-input"
+          type="text"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="6"
+          [ngModel]="code()"
+          (ngModelChange)="code.set($event)"
+          name="code"
+          [attr.aria-invalid]="!!errorMessage()"
+        />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button
+        type="submit"
+        class="button button--primary button--lg"
+        [disabled]="submitting()"
+        style="width: 100%"
+      >
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'जाँच हो रही है…'
+              : 'Verifying…'
+            : language() === 'hi'
+              ? 'आगे बढ़ें'
+              : 'Continue'
+        }}
+      </button>
+
+      <button type="button" class="button button--link" (click)="backToIdentifier()" style="width: 100%">
+        {{ language() === 'hi' ? 'नंबर बदलें' : 'Change number or email' }}
+      </button>
+    </form>
+  }
+
+  <p class="auth-card__footer-link">
+    <a [routerLink]="['/', orgSlug]">
+      {{ language() === 'hi' ? '← गोपनीयता केंद्र पर वापस जाएँ' : '← Back to the Privacy Center' }}
+    </a>
+  </p>
+</app-auth-card>

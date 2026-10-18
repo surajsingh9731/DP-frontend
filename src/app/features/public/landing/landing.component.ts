@@ -1,6 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  OnDestroy,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { LanguageService } from '../../../core/services/language.service';
+
+gsap.registerPlugin(ScrollTrigger);
 
 type ModuleIcon = 'register' | 'notice' | 'consent' | 'rights' | 'breach' | 'retention';
 
@@ -78,8 +90,14 @@ const MODULE_TONE: Record<ModuleIcon, string> = {
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
 })
-export class LandingComponent {
+export class LandingComponent implements AfterViewInit, OnDestroy {
   private readonly languageService = inject(LanguageService);
+  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly triggers: ScrollTrigger[] = [];
+  private readonly reduceMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   readonly language = this.languageService.language;
 
   readonly copy = computed<LandingCopy>(() =>
@@ -92,6 +110,128 @@ export class LandingComponent {
 
   previewStatusLabel(status: PreviewCheck['status']): string {
     return status === 'ready' ? this.copy().previewStatusReady : this.copy().previewStatusPending;
+  }
+
+  ngAfterViewInit(): void {
+    if (this.reduceMotion) return; // Motion is purely decorative here — every fact already exists as static, readable text.
+    this.animateHero();
+    this.animateOnScroll();
+    this.animateHeroTilt();
+  }
+
+  ngOnDestroy(): void {
+    this.triggers.forEach((trigger) => trigger.kill());
+  }
+
+  private query<T extends Element = Element>(selector: string): T[] {
+    const root = this.host.nativeElement as HTMLElement;
+    return Array.from(root.querySelectorAll(selector)) as T[];
+  }
+
+  /** Entrance sequence for the above-the-fold content — runs once on load, never on scroll. */
+  private animateHero(): void {
+    const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    timeline
+      .from('.hero__eyebrow', { opacity: 0, y: 16, duration: 0.5 })
+      .from('.hero__heading', { opacity: 0, y: 20, duration: 0.6 }, '-=0.3')
+      .from('.hero__subheading', { opacity: 0, y: 16, duration: 0.5 }, '-=0.35')
+      .from('.hero__ctas', { opacity: 0, y: 16, duration: 0.5 }, '-=0.3')
+      .from(this.query('.trust-strip__item'), { opacity: 0, y: 10, duration: 0.4, stagger: 0.08 }, '-=0.25')
+      .from('.hero__visual', { opacity: 0, scale: 0.94, duration: 0.7, ease: 'power2.out' }, '-=0.6');
+  }
+
+  /** Scroll-triggered reveals for everything below the fold, plus a count-up on the stats band. */
+  private animateOnScroll(): void {
+    const sections: { selector: string; stagger?: number }[] = [
+      { selector: '.module-card', stagger: 0.08 },
+      { selector: '.audience-card', stagger: 0.1 },
+    ];
+    for (const { selector, stagger } of sections) {
+      const elements = this.query(selector);
+      if (elements.length === 0) continue;
+      gsap.set(elements, { opacity: 0, y: 24 });
+      this.triggers.push(
+        ScrollTrigger.create({
+          trigger: elements[0].closest('ul') ?? elements[0],
+          start: 'top 85%',
+          once: true,
+          onEnter: () =>
+            gsap.to(elements, { opacity: 1, y: 0, duration: 0.5, stagger, ease: 'power2.out' }),
+        }),
+      );
+    }
+
+    const closing = this.host.nativeElement.querySelector('.closing');
+    if (closing) {
+      gsap.set(closing, { opacity: 0, y: 20 });
+      this.triggers.push(
+        ScrollTrigger.create({
+          trigger: closing,
+          start: 'top 85%',
+          once: true,
+          onEnter: () => gsap.to(closing, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }),
+        }),
+      );
+    }
+
+    const statValues = this.query<HTMLElement>('.stats-band__value');
+    if (statValues.length > 0) {
+      this.triggers.push(
+        ScrollTrigger.create({
+          trigger: '.stats-band',
+          start: 'top 85%',
+          once: true,
+          onEnter: () => this.countUpStats(statValues),
+        }),
+      );
+    }
+  }
+
+  /** Numeric stat values ("6", "2") count up from 0; non-numeric ones ("AA") just fade in. */
+  private countUpStats(elements: HTMLElement[]): void {
+    for (const el of elements) {
+      const text = el.textContent?.trim() ?? '';
+      const numeric = Number(text);
+      if (Number.isNaN(numeric)) {
+        gsap.from(el, { opacity: 0, duration: 0.5 });
+        continue;
+      }
+      const counter = { value: 0 };
+      gsap.to(counter, {
+        value: numeric,
+        duration: 1,
+        ease: 'power1.out',
+        onUpdate: () => {
+          el.textContent = String(Math.round(counter.value));
+        },
+      });
+    }
+  }
+
+  /** Subtle pointer-following tilt on the hero's dashboard preview card — purely decorative, disabled under reduced motion and on touch (no pointer to follow). */
+  private animateHeroTilt(): void {
+    const root = this.host.nativeElement as HTMLElement;
+    const visual = root.querySelector('.hero__visual') as HTMLElement | null;
+    const card = root.querySelector('.preview-card') as HTMLElement | null;
+    if (!visual || !card || window.matchMedia('(pointer: coarse)').matches) return;
+
+    const onMove = (event: PointerEvent): void => {
+      const rect = visual.getBoundingClientRect();
+      const relX = (event.clientX - rect.left) / rect.width - 0.5;
+      const relY = (event.clientY - rect.top) / rect.height - 0.5;
+      gsap.to(card, {
+        rotateY: relX * 8,
+        rotateX: relY * -8,
+        duration: 0.4,
+        ease: 'power2.out',
+        transformPerspective: 800,
+      });
+    };
+    const onLeave = (): void => {
+      gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power2.out' });
+    };
+    visual.addEventListener('pointermove', onMove);
+    visual.addEventListener('pointerleave', onLeave);
   }
 
   private readonly enCopy: LandingCopy = {

@@ -25,30 +25,36 @@ export class ApiClientService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = '/api';
 
-  get<T>(path: string): Observable<T> {
-    return this.request<T>('GET', path);
+  get<T>(path: string, headers?: Record<string, string>): Observable<T> {
+    return this.request<T>('GET', path, undefined, headers);
   }
 
-  post<T>(path: string, body?: unknown): Observable<T> {
-    return this.request<T>('POST', path, body);
+  post<T>(path: string, body?: unknown, headers?: Record<string, string>): Observable<T> {
+    return this.request<T>('POST', path, body, headers);
   }
 
-  patch<T>(path: string, body?: unknown): Observable<T> {
-    return this.request<T>('PATCH', path, body);
+  patch<T>(path: string, body?: unknown, headers?: Record<string, string>): Observable<T> {
+    return this.request<T>('PATCH', path, body, headers);
   }
 
-  put<T>(path: string, body?: unknown): Observable<T> {
-    return this.request<T>('PUT', path, body);
+  put<T>(path: string, body?: unknown, headers?: Record<string, string>): Observable<T> {
+    return this.request<T>('PUT', path, body, headers);
   }
 
-  delete<T>(path: string): Observable<T> {
-    return this.request<T>('DELETE', path);
+  delete<T>(path: string, headers?: Record<string, string>): Observable<T> {
+    return this.request<T>('DELETE', path, undefined, headers);
   }
 
-  private request<T>(method: string, path: string, body?: unknown): Observable<T> {
+  private request<T>(
+    method: string,
+    path: string,
+    body?: unknown,
+    headers?: Record<string, string>,
+  ): Observable<T> {
     return this.http
       .request<ApiEnvelope<T> | T>(method, `${this.baseUrl}${path}`, {
         body,
+        headers,
         withCredentials: true,
       })
       .pipe(

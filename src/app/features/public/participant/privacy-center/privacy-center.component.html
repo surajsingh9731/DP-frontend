@@ -1,0 +1,51 @@
+<div class="privacy-center">
+  <p class="privacy-center__eyebrow">{{ copy().heading }}</p>
+
+  @if (notice() === undefined) {
+    <p class="field__hint">{{ copy().loading }}</p>
+  } @else if (!notice()!.available) {
+    <div class="privacy-center__card">
+      <h1 class="privacy-center__title">{{ copy().unavailableTitle }}</h1>
+      <p>{{ copy().unavailableBody }}</p>
+    </div>
+  } @else {
+    <div class="privacy-center__card">
+      <h1 class="privacy-center__title">{{ notice()!.organisationName }}</h1>
+
+      @if (title()) {
+        <h2 class="privacy-center__notice-title">{{ title() }}</h2>
+      }
+      @if (body()) {
+        <p class="privacy-center__notice-body">{{ body() }}</p>
+      }
+
+      @if (notice()!.contactName) {
+        <div class="privacy-center__contact">
+          <h3>{{ copy().contactHeading }}</h3>
+          <p>
+            {{ notice()!.contactName }}
+            @if (notice()!.contactRole) {
+              <span class="privacy-center__contact-role">— {{ notice()!.contactRole }}</span>
+            }
+          </p>
+          @if (notice()!.contactPhone) {
+            <p><a [href]="'tel:' + notice()!.contactPhone">{{ notice()!.contactPhone }}</a></p>
+          }
+          @if (notice()!.contactEmail) {
+            <p><a [href]="'mailto:' + notice()!.contactEmail">{{ notice()!.contactEmail }}</a></p>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="privacy-center__actions">
+      <a class="button button--primary button--lg" [routerLink]="['/', orgSlug, 'my-consent']">
+        {{ copy().manageConsent }}
+      </a>
+      <a class="button button--secondary button--lg" [routerLink]="['/', orgSlug, 'my-requests']">
+        {{ copy().myRequests }}
+      </a>
+      <p class="privacy-center__hint">{{ copy().signIn }}</p>
+    </div>
+  }
+</div>

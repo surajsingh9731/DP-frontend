@@ -15,7 +15,12 @@ import { RetentionComponent } from './features/retention/retention.component';
 import { VendorsComponent } from './features/vendors/vendors.component';
 import { TrainingComponent } from './features/training/training.component';
 import { AppComingSoonComponent } from './features/app-coming-soon/app-coming-soon.component';
+import { PrivacyCenterComponent } from './features/public/participant/privacy-center/privacy-center.component';
+import { ParticipantVerifyComponent } from './features/public/participant/verify/participant-verify.component';
+import { MyConsentComponent } from './features/public/participant/my-consent/my-consent.component';
+import { MyRequestsComponent } from './features/public/participant/my-requests/my-requests.component';
 import { authGuard } from './core/guards/auth.guard';
+import { participantGuard } from './core/guards/participant.guard';
 
 /**
  * Two top-level route groups: the public (no-login) shell, and the
@@ -85,6 +90,31 @@ export const routes: Routes = [
         path: 'sign-in/verify/:challengeId',
         component: VerifyComponent,
         title: 'Verify — Sahmati',
+      },
+      // Everything below is per-organisation and must stay after every
+      // static Sahmati-own route above, since ':orgSlug' would otherwise
+      // shadow 'get-started', 'sign-in', etc.
+      {
+        path: ':orgSlug',
+        component: PrivacyCenterComponent,
+        title: 'Privacy Center — Sahmati',
+      },
+      {
+        path: ':orgSlug/verify',
+        component: ParticipantVerifyComponent,
+        title: 'Verify — Sahmati',
+      },
+      {
+        path: ':orgSlug/my-consent',
+        component: MyConsentComponent,
+        canActivate: [participantGuard],
+        title: 'My consent — Sahmati',
+      },
+      {
+        path: ':orgSlug/my-requests',
+        component: MyRequestsComponent,
+        canActivate: [participantGuard],
+        title: 'My requests — Sahmati',
       },
       { path: '**', redirectTo: '' },
     ],
