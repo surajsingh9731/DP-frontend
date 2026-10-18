@@ -36,4 +36,14 @@
   <main id="main-content" class="public-shell__main" tabindex="-1">
     <router-outlet />
   </main>
+
+  <footer class="public-shell__footer">
+    <div class="public-shell__footer-inner">
+      <div class="public-shell__footer-brand">
+        <img src="brand/logo.svg" alt="" width="110" height="27" />
+        <p>{{ footerTagline() }}</p>
+      </div>
+      <p class="public-shell__footer-copyright">{{ footerCopyright() }}</p>
+    </div>
+  </footer>
 </div>

@@ -104,3 +104,51 @@
     outline: none; // the skip-link target shouldn't show a stray ring on load
   }
 }
+
+.public-shell__footer {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.public-shell__footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+
+  @media (min-width: 40rem) {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+.public-shell__footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+
+  img {
+    opacity: 0.85;
+  }
+
+  p {
+    color: var(--color-ink-700);
+    font-size: var(--font-size-sm);
+    max-width: 24rem;
+  }
+
+  @media (min-width: 40rem) {
+    align-items: flex-start;
+  }
+}
+
+.public-shell__footer-copyright {
+  color: var(--color-ink-700);
+  font-size: var(--font-size-sm);
+}

@@ -66,6 +66,18 @@ export class PublicShellComponent {
         },
   );
 
+  readonly footerTagline = computed(() =>
+    this.language() === 'hi'
+      ? 'भारतीय स्कूलों और कोचिंग सेंटरों के लिए डेटा संरक्षण अनुपालन।'
+      : 'Data protection compliance for Indian schools and coaching centres.',
+  );
+
+  readonly footerCopyright = computed(() =>
+    this.language() === 'hi'
+      ? `© ${new Date().getFullYear()} सहमति`
+      : `© ${new Date().getFullYear()} Sahmati`,
+  );
+
   toggleTextSize(): void {
     this.textSizeService.toggle();
   }

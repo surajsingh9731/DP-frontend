@@ -20,6 +20,11 @@ interface Stat {
   readonly label: string;
 }
 
+interface PreviewCheck {
+  readonly label: string;
+  readonly status: 'ready' | 'pending';
+}
+
 interface LandingCopy {
   readonly eyebrow: string;
   readonly heading: string;
@@ -28,6 +33,10 @@ interface LandingCopy {
   readonly ctaSecondaryLead: string;
   readonly ctaSecondaryAction: string;
   readonly trustStrip: readonly string[];
+  readonly previewTitle: string;
+  readonly previewChecks: readonly PreviewCheck[];
+  readonly previewStatusReady: string;
+  readonly previewStatusPending: string;
   readonly stats: readonly Stat[];
   readonly modulesHeading: string;
   readonly modulesSubheading: string;
@@ -81,6 +90,10 @@ export class LandingComponent {
     return MODULE_TONE[icon];
   }
 
+  previewStatusLabel(status: PreviewCheck['status']): string {
+    return status === 'ready' ? this.copy().previewStatusReady : this.copy().previewStatusPending;
+  }
+
   private readonly enCopy: LandingCopy = {
     eyebrow: 'Built for India · DPDP Act, 2023',
     heading: 'Data protection compliance for schools and coaching centres',
@@ -94,6 +107,15 @@ export class LandingComponent {
       'Available in Hindi and English',
       'Built for Indian schools and coaching centres',
     ],
+    previewTitle: 'Readiness, at a glance',
+    previewChecks: [
+      { label: 'Register of data', status: 'ready' },
+      { label: 'Privacy notice', status: 'ready' },
+      { label: 'Consent capture', status: 'ready' },
+      { label: 'Rights requests', status: 'pending' },
+    ],
+    previewStatusReady: 'Ready',
+    previewStatusPending: '1 open',
     stats: [
       { value: '6', label: 'compliance modules, end to end' },
       { value: '2', label: 'languages — Hindi and English' },
@@ -175,6 +197,15 @@ export class LandingComponent {
       'हिन्दी और अंग्रेज़ी में उपलब्ध',
       'भारतीय स्कूलों और कोचिंग सेंटरों के लिए निर्मित',
     ],
+    previewTitle: 'तैयारी, एक नज़र में',
+    previewChecks: [
+      { label: 'डेटा रजिस्टर', status: 'ready' },
+      { label: 'गोपनीयता सूचना', status: 'ready' },
+      { label: 'सहमति संग्रहण', status: 'ready' },
+      { label: 'अधिकार निवेदन', status: 'pending' },
+    ],
+    previewStatusReady: 'तैयार',
+    previewStatusPending: '1 शेष',
     stats: [
       { value: '6', label: 'अनुपालन मॉड्यूल, पूरी तरह से' },
       { value: '2', label: 'भाषाएं — हिन्दी और अंग्रेज़ी' },
