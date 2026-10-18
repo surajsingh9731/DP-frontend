@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.auth-card__footer-link {
+  margin-top: var(--space-6);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-700);
+
+  a {
+    font-weight: var(--font-weight-semibold);
+    margin-left: var(--space-1);
+  }
+}

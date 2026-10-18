@@ -1,0 +1,66 @@
+<div class="dashboard">
+  <header class="dashboard__header">
+    <div>
+      <h1>{{ language() === 'hi' ? 'आपकी तैयारी' : 'Your readiness' }}</h1>
+      <p class="dashboard__subtitle">
+        {{
+          language() === 'hi'
+            ? 'हर कार्ड नीचे दिए गए मॉड्यूल से लाइव डेटा दिखाता है।'
+            : 'Every card below reads live from the module it links to.'
+        }}
+      </p>
+    </div>
+    <a class="button button--primary" routerLink="/app/consents">
+      {{ language() === 'hi' ? 'सहमति इकट्ठा करें' : 'Collect parent consent' }}
+    </a>
+  </header>
+
+  @if (checks() === undefined) {
+    <p class="dashboard__loading">{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+  } @else if (checks() === null) {
+    <p class="dashboard__error" role="alert">
+      {{
+        language() === 'hi'
+          ? 'डेटा लोड नहीं हो सका। पेज रीलोड करें।'
+          : "Couldn't load your dashboard. Try reloading."
+      }}
+    </p>
+  } @else {
+    <div class="dashboard__ring-card">
+      <div class="dashboard__ring" [style.background]="ringGradient()">
+        <div class="dashboard__ring-inner">
+          <strong>{{ readinessPercent() }}%</strong>
+          <span>{{ language() === 'hi' ? 'तैयार' : 'ready' }}</span>
+        </div>
+      </div>
+      <div>
+        <p class="dashboard__ring-headline">
+          {{
+            stepsLeft() === 0
+              ? language() === 'hi'
+                ? 'सब कुछ तैयार है'
+                : "You're all set"
+              : language() === 'hi'
+                ? stepsLeft() + ' कदम बाकी हैं'
+                : stepsLeft() + ' steps left'
+          }}
+        </p>
+      </div>
+    </div>
+
+    <div class="dashboard__grid">
+      @for (check of checks(); track check.id) {
+        <a class="check-card" [class]="'check-card--' + check.status" [routerLink]="check.href">
+          <span class="check-card__icon" [class]="'check-card__icon--' + check.status">
+            <app-icon [name]="statusIcon[check.status]" [size]="18" />
+          </span>
+          <span class="check-card__body">
+            <span class="check-card__title">{{ check.title }}</span>
+            <span class="check-card__summary">{{ check.summary }}</span>
+          </span>
+          <span class="check-card__count">{{ check.count }}</span>
+        </a>
+      }
+    </div>
+  }
+</div>

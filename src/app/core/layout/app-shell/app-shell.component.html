@@ -1,0 +1,57 @@
+<div class="shell">
+  <a class="skip-link" href="#main-content">{{
+    language() === 'hi' ? 'मुख्य सामग्री पर जाएँ' : 'Skip to main content'
+  }}</a>
+
+  <aside class="shell__sidebar">
+    <div class="shell__brand">
+      <img src="/brand/mark.svg" alt="" width="28" height="28" />
+      <span>Sahmati</span>
+    </div>
+
+    <nav
+      class="shell__nav"
+      [attr.aria-label]="language() === 'hi' ? 'मुख्य नेविगेशन' : 'Main navigation'"
+    >
+      @for (item of navItems; track item.path) {
+        <a
+          class="shell__nav-link"
+          [routerLink]="item.path"
+          routerLinkActive="shell__nav-link--active"
+          [routerLinkActiveOptions]="{ exact: item.path === '/app' }"
+          [attr.aria-label]="language() === 'hi' ? item.labelHi : item.labelEn"
+        >
+          <app-icon [name]="item.icon" [size]="20" />
+          <span>{{ language() === 'hi' ? item.labelHi : item.labelEn }}</span>
+        </a>
+      }
+    </nav>
+
+    <button
+      type="button"
+      class="shell__signout"
+      (click)="signOut()"
+      [attr.aria-label]="language() === 'hi' ? 'साइन आउट' : 'Sign out'"
+    >
+      <app-icon name="logout" [size]="18" />
+      <span>{{ language() === 'hi' ? 'साइन आउट' : 'Sign out' }}</span>
+    </button>
+  </aside>
+
+  <div class="shell__main-column">
+    <header class="shell__topbar">
+      <div class="shell__org">
+        <span class="shell__org-badge">{{ orgInitial() }}</span>
+        <div>
+          <p class="shell__org-name">{{ session()?.organisationName }}</p>
+          <p class="shell__org-role">{{ session()?.role }}</p>
+        </div>
+      </div>
+      <app-language-toggle />
+    </header>
+
+    <main id="main-content" class="shell__content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

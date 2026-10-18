@@ -1,0 +1,13 @@
+<div class="auth-card">
+  <img class="auth-card__mark" src="/brand/mark.svg" alt="" width="56" height="56" />
+  @if (eyebrow()) {
+    <p class="auth-card__eyebrow">{{ eyebrow() }}</p>
+  }
+  <h1 class="auth-card__title">{{ title() }}</h1>
+  @if (subtitle()) {
+    <p class="auth-card__subtitle">{{ subtitle() }}</p>
+  }
+  <div class="auth-card__body">
+    <ng-content></ng-content>
+  </div>
+</div>

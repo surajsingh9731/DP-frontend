@@ -1,0 +1,51 @@
+<app-auth-card
+  [eyebrow]="language() === 'hi' ? 'सहमति' : 'Sahmati'"
+  [title]="title()"
+  [subtitle]="
+    language() === 'hi'
+      ? 'अपना मोबाइल नंबर या ईमेल दर्ज करें।'
+      : 'Enter the mobile number or email on your account.'
+  "
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label class="field__label" for="identifier">
+        {{ language() === 'hi' ? 'मोबाइल नंबर या ईमेल' : 'Mobile number or email' }}
+      </label>
+      <input
+        id="identifier"
+        class="input"
+        type="text"
+        formControlName="identifier"
+        autocomplete="username"
+        [attr.aria-invalid]="form.controls.identifier.invalid && form.controls.identifier.touched"
+      />
+    </div>
+
+    @if (errorMessage()) {
+      <p class="field__error" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button
+      type="submit"
+      class="button button--primary button--lg"
+      [disabled]="submitting()"
+      style="width: 100%"
+    >
+      {{
+        submitting()
+          ? language() === 'hi'
+            ? 'भेजा जा रहा है…'
+            : 'Sending…'
+          : language() === 'hi'
+            ? 'कोड भेजें'
+            : 'Get code'
+      }}
+    </button>
+  </form>
+
+  <p class="auth-card__footer-link">
+    {{ language() === 'hi' ? 'खाता नहीं है?' : "Don't have an account?" }}
+    <a routerLink="/get-started">{{ language() === 'hi' ? 'शुरू करें' : 'Get started' }}</a>
+  </p>
+</app-auth-card>

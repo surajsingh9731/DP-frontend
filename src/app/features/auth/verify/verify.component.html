@@ -1,0 +1,54 @@
+<app-auth-card
+  [eyebrow]="language() === 'hi' ? 'सहमति' : 'Sahmati'"
+  [title]="title()"
+  [subtitle]="
+    maskedIdentifier
+      ? language() === 'hi'
+        ? maskedIdentifier + ' पर भेजा गया कोड'
+        : 'Code sent to ' + maskedIdentifier
+      : language() === 'hi'
+        ? 'अपना कोड दर्ज करें।'
+        : 'Enter the code we sent you.'
+  "
+>
+  <form (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label class="field__label" for="code">{{
+        language() === 'hi' ? '6 अंकों का कोड' : '6-digit code'
+      }}</label>
+      <input
+        id="code"
+        class="otp-input"
+        type="text"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        maxlength="6"
+        [ngModel]="code()"
+        (ngModelChange)="code.set($event)"
+        name="code"
+        [attr.aria-invalid]="!!errorMessage()"
+      />
+    </div>
+
+    @if (errorMessage()) {
+      <p class="field__error" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button
+      type="submit"
+      class="button button--primary button--lg"
+      [disabled]="submitting()"
+      style="width: 100%"
+    >
+      {{
+        submitting()
+          ? language() === 'hi'
+            ? 'जाँच हो रही है…'
+            : 'Verifying…'
+          : language() === 'hi'
+            ? 'आगे बढ़ें'
+            : 'Continue'
+      }}
+    </button>
+  </form>
+</app-auth-card>

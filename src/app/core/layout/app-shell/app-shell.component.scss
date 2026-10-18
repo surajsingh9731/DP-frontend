@@ -1,0 +1,156 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.shell__sidebar {
+  width: 17rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-primary-900);
+  color: #fff;
+  padding: var(--space-6) var(--space-4);
+
+  // Collapses to an icon rail rather than disappearing — a hidden sidebar
+  // with no replacement nav would strand touch users (plan priority #9).
+  @media (max-width: 64rem) {
+    width: 4.5rem;
+    padding: var(--space-6) var(--space-2);
+
+    .shell__brand span,
+    .shell__nav-link span,
+    .shell__signout span {
+      display: none;
+    }
+
+    .shell__brand {
+      justify-content: center;
+    }
+
+    .shell__nav-link,
+    .shell__signout {
+      justify-content: center;
+    }
+  }
+}
+
+.shell__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  padding: 0 var(--space-2);
+  margin-bottom: var(--space-8);
+}
+
+.shell__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.shell__nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: background var(--motion-duration) var(--motion-easing);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+
+  &--active {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+  }
+}
+
+.shell__signout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-target-min);
+  padding: var(--space-2) var(--space-3);
+  margin-top: var(--space-4);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+}
+
+.shell__main-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-8);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+
+  @media (max-width: 64rem) {
+    padding: var(--space-4);
+  }
+}
+
+.shell__org {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.shell__org-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+  font-weight: var(--font-weight-bold);
+}
+
+.shell__org-name {
+  font-weight: var(--font-weight-semibold);
+}
+
+.shell__org-role {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-700);
+  text-transform: capitalize;
+}
+
+.shell__content {
+  flex: 1;
+  padding: var(--space-8);
+
+  @media (max-width: 64rem) {
+    padding: var(--space-4);
+  }
+}

@@ -1,0 +1,129 @@
+// Shared form control styles — every authenticated-app form (signup,
+// login, OTP, vendor/staff/consent forms) reuses these instead of each
+// feature inventing its own input chrome.
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.field__label {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-900);
+}
+
+.field__hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-700);
+}
+
+.field__error {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger-700);
+  font-weight: var(--font-weight-medium);
+}
+
+.input,
+.select {
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-ink-900);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  transition: border-color var(--motion-duration) var(--motion-easing);
+
+  &:focus-visible {
+    border-color: var(--color-primary-700);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger-700);
+  }
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2344475a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  padding-right: var(--space-8);
+}
+
+// Single-select "card radio" rows — matches the prototype's "what do you
+// run?" / role-picker pattern: a labelled option with a description line,
+// not a bare radio + label.
+.option-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  background: var(--color-surface);
+  transition:
+    border-color var(--motion-duration) var(--motion-easing),
+    background var(--motion-duration) var(--motion-easing);
+
+  &:has(input:checked) {
+    border-color: var(--color-primary-700);
+    background: var(--color-primary-100);
+  }
+
+  &:has(input:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: 2px;
+  }
+}
+
+.option-card__input {
+  margin-top: 0.2em;
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--color-primary-700);
+  flex-shrink: 0;
+}
+
+.option-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.option-card__title {
+  font-weight: var(--font-weight-semibold);
+}
+
+.option-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-700);
+}
+
+// OTP code entry — large, spaced-out digits, matches the prototype's
+// verification screen.
+.otp-input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: var(--font-size-2xl);
+  letter-spacing: 0.4em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+
+  &:focus-visible {
+    border-color: var(--color-primary-700);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger-700);
+  }
+}

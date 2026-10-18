@@ -5,6 +5,7 @@
 @use 'styles/tokens';
 @use 'styles/base';
 @use 'styles/buttons';
+@use 'styles/forms';
 
 // Self-hosted Mukta (Latin + Devanagari) — no third-party font CDN request,
 // which keeps the public/no-login path (brief NFR: <3s on 3G) free of an

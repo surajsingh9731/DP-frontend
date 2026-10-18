@@ -1,0 +1,117 @@
+<app-auth-card
+  [eyebrow]="language() === 'hi' ? 'सहमति' : 'Sahmati'"
+  [title]="title()"
+  [subtitle]="
+    language() === 'hi'
+      ? 'हम आपके संस्थान के लिए सही सवाल और टेम्पलेट लोड करते हैं।'
+      : 'We load the right questions and templates for your sector.'
+  "
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label class="field__label" for="organisationName">
+        {{ language() === 'hi' ? 'संस्थान का नाम' : 'Organisation name' }}
+      </label>
+      <input
+        id="organisationName"
+        class="input"
+        type="text"
+        formControlName="organisationName"
+        [attr.aria-invalid]="
+          form.controls.organisationName.invalid && form.controls.organisationName.touched
+        "
+        autocomplete="organization"
+      />
+      @if (form.controls.organisationName.invalid && form.controls.organisationName.touched) {
+        <p class="field__error">
+          {{ language() === 'hi' ? 'संस्थान का नाम दर्ज करें।' : 'Enter your organisation name.' }}
+        </p>
+      }
+    </div>
+
+    <div class="field">
+      <span class="field__label">{{
+        language() === 'hi' ? 'आप क्या करते हैं?' : 'What do you run?'
+      }}</span>
+      @for (pack of sectorPacks(); track pack.code) {
+        <label class="option-card">
+          <input
+            class="option-card__input"
+            type="radio"
+            name="sectorPackCode"
+            [value]="pack.code"
+            formControlName="sectorPackCode"
+          />
+          <span class="option-card__body">
+            <span class="option-card__title">{{ pack.label[language()] }}</span>
+          </span>
+        </label>
+      }
+      @if (sectorPacks().length === 0) {
+        <p class="field__hint">
+          {{ language() === 'hi' ? 'सेक्टर लोड हो रहे हैं…' : 'Loading sectors…' }}
+        </p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="ownerDisplayName">
+        {{ language() === 'hi' ? 'आपका नाम' : 'Your name' }}
+      </label>
+      <input
+        id="ownerDisplayName"
+        class="input"
+        type="text"
+        formControlName="ownerDisplayName"
+        autocomplete="name"
+      />
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="ownerIdentifier">
+        {{ language() === 'hi' ? 'मोबाइल नंबर या ईमेल' : 'Mobile number or email' }}
+      </label>
+      <input
+        id="ownerIdentifier"
+        class="input"
+        type="text"
+        formControlName="ownerIdentifier"
+        autocomplete="email"
+        [placeholder]="language() === 'hi' ? '+91 98110 45672' : '+91 98110 45672 or you@org.in'"
+      />
+      <p class="field__hint">
+        {{
+          language() === 'hi'
+            ? 'हम WhatsApp या ईमेल पर 6 अंकों का कोड भेजेंगे।'
+            : 'We will send a 6-digit code on WhatsApp or email.'
+        }}
+      </p>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="field__error" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button
+      type="submit"
+      class="button button--primary button--lg"
+      [disabled]="submitting()"
+      style="width: 100%"
+    >
+      {{
+        submitting()
+          ? language() === 'hi'
+            ? 'भेजा जा रहा है…'
+            : 'Sending…'
+          : language() === 'hi'
+            ? 'कोड भेजें'
+            : 'Get code'
+      }}
+    </button>
+  </form>
+
+  <p class="auth-card__footer-link">
+    {{ language() === 'hi' ? 'पहले से खाता है?' : 'Already have an account?' }}
+    <a routerLink="/sign-in">{{ language() === 'hi' ? 'साइन इन करें' : 'Sign in' }}</a>
+  </p>
+</app-auth-card>

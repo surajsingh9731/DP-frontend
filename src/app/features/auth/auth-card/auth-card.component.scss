@@ -1,0 +1,35 @@
+.auth-card {
+  width: min(100%, 26rem);
+  margin: var(--space-12) auto;
+  padding: var(--space-8) var(--space-6);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.auth-card__mark {
+  margin-bottom: var(--space-4);
+}
+
+.auth-card__eyebrow {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-700);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-2);
+}
+
+.auth-card__title {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-2);
+}
+
+.auth-card__subtitle {
+  color: var(--color-ink-700);
+  margin-bottom: var(--space-6);
+}
+
+.auth-card__body {
+  margin-top: var(--space-6);
+}
