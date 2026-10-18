@@ -14,6 +14,9 @@ import { BreachComponent } from './features/breach/breach.component';
 import { RetentionComponent } from './features/retention/retention.component';
 import { VendorsComponent } from './features/vendors/vendors.component';
 import { TrainingComponent } from './features/training/training.component';
+import { StaffComponent } from './features/staff/staff.component';
+import { SettingsComponent } from './features/settings/settings.component';
+import { PartnerComponent } from './features/partner/partner.component';
 import { AppComingSoonComponent } from './features/app-coming-soon/app-coming-soon.component';
 import { PrivacyCenterComponent } from './features/public/participant/privacy-center/privacy-center.component';
 import { ParticipantVerifyComponent } from './features/public/participant/verify/participant-verify.component';
@@ -28,9 +31,6 @@ import { participantGuard } from './core/guards/participant.guard';
  * redirect inside its own children array — a single top-level wildcard
  * would otherwise swallow `/app/**` before the guarded group ever runs.
  *
- * `staff` and `settings` still route to AppComingSoonComponent: there is
- * no backend API yet for listing/inviting staff or editing organisation
- * settings, so there is nothing real for those pages to show.
  */
 export const routes: Routes = [
   {
@@ -47,17 +47,47 @@ export const routes: Routes = [
       { path: 'retention', component: RetentionComponent, title: 'Keep and delete — Sahmati' },
       { path: 'vendors', component: VendorsComponent, title: 'Vendors — Sahmati' },
       { path: 'training', component: TrainingComponent, title: 'Training — Sahmati' },
+      { path: 'staff', component: StaffComponent, title: 'Staff — Sahmati' },
+      { path: 'settings', component: SettingsComponent, title: 'Settings — Sahmati' },
+      { path: 'partner', component: PartnerComponent, title: 'Partner portal — Sahmati' },
+      // No real backend yet for these (Modules K/N/Q/R and the three
+      // evidence/live-check/change-impact workflow additions) — an honest
+      // placeholder, never fabricated sample data, per the FRS gap list.
       {
-        path: 'staff',
+        path: 'billing',
         component: AppComingSoonComponent,
-        data: { titleEn: 'Staff and activity', titleHi: 'स्टाफ और गतिविधि' },
-        title: 'Staff and activity — Sahmati',
+        data: { titleEn: 'Plan and billing', titleHi: 'योजना और बिलिंग' },
+        title: 'Billing — Sahmati',
       },
       {
-        path: 'settings',
+        path: 'security',
         component: AppComingSoonComponent,
-        data: { titleEn: 'Settings', titleHi: 'सेटिंग्स' },
-        title: 'Settings — Sahmati',
+        data: { titleEn: 'Security checklist', titleHi: 'सुरक्षा जांच सूची' },
+        title: 'Security — Sahmati',
+      },
+      {
+        path: 'evidence',
+        component: AppComingSoonComponent,
+        data: { titleEn: 'Evidence hub', titleHi: 'प्रमाण केंद्र' },
+        title: 'Evidence — Sahmati',
+      },
+      {
+        path: 'checks',
+        component: AppComingSoonComponent,
+        data: { titleEn: 'Live checks', titleHi: 'लाइव जांच' },
+        title: 'Live checks — Sahmati',
+      },
+      {
+        path: 'developers',
+        component: AppComingSoonComponent,
+        data: { titleEn: 'Developer API', titleHi: 'डेवलपर API' },
+        title: 'Developer API — Sahmati',
+      },
+      {
+        path: 'admin',
+        component: AppComingSoonComponent,
+        data: { titleEn: 'Platform admin', titleHi: 'प्लेटफ़ॉर्म एडमिन' },
+        title: 'Admin — Sahmati',
       },
       { path: '**', redirectTo: '' },
     ],

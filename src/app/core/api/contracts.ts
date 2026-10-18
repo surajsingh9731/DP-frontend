@@ -410,3 +410,34 @@ export interface TrainingCertificateView {
   lessonTitle: { en: string; hi: string };
   issuedAt: string;
 }
+
+// ---------------------------------------------------------------------------
+// Module A — staff management
+// ---------------------------------------------------------------------------
+
+export interface StaffMemberView {
+  membershipId: string;
+  userId: string;
+  displayName: string;
+  identifier: string;
+  role: MembershipRole;
+  verified: boolean;
+  version: number;
+  createdAt: string;
+  isCurrentUser: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Organisation settings (R2)
+// ---------------------------------------------------------------------------
+
+export interface OrganisationSettingsView {
+  organisationName: string;
+  organisationSlug: string;
+  contactName: string | null;
+  contactRole: string | null;
+  contactPhone: string | null;
+  contactEmail: string | null;
+  version: number;
+  branches: { id: string; name: string; isPrimary: boolean }[];
+}

@@ -1,0 +1,128 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">{{ language() === 'hi' ? 'स्टाफ' : 'Staff' }}</h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'जो लोग आपकी ओर से सहमति और निवेदन संभालते हैं।'
+          : 'The people who handle consent and requests on your behalf.'
+      }}
+    </p>
+  </div>
+  @if (isOwner()) {
+    <div class="page-header__actions">
+      <button type="button" class="button button--primary" (click)="toggleForm()">
+        {{
+          showForm()
+            ? language() === 'hi'
+              ? 'रद्द करें'
+              : 'Cancel'
+            : language() === 'hi'
+              ? 'स्टाफ जोड़ें'
+              : 'Invite staff'
+        }}
+      </button>
+    </div>
+  }
+</div>
+
+@if (showForm()) {
+  <div class="panel">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label class="field__label" for="displayName">{{
+          language() === 'hi' ? 'नाम' : 'Name'
+        }}</label>
+        <input id="displayName" class="input" type="text" formControlName="displayName" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="identifier">{{
+          language() === 'hi' ? 'मोबाइल नंबर या ईमेल' : 'Mobile number or email'
+        }}</label>
+        <input id="identifier" class="input" type="text" formControlName="identifier" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="role">{{ language() === 'hi' ? 'भूमिका' : 'Role' }}</label>
+        <select id="role" class="input" formControlName="role">
+          <option value="staff">{{ language() === 'hi' ? 'स्टाफ' : 'Staff' }}</option>
+          <option value="viewer">{{ language() === 'hi' ? 'दर्शक' : 'Viewer' }}</option>
+          <option value="owner">{{ language() === 'hi' ? 'मालिक' : 'Owner' }}</option>
+        </select>
+      </div>
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+      <button type="submit" class="button button--primary" [disabled]="submitting()">
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'भेजा जा रहा है…'
+              : 'Inviting…'
+            : language() === 'hi'
+              ? 'आमंत्रित करें'
+              : 'Send invite'
+        }}
+      </button>
+    </form>
+  </div>
+} @else if (errorMessage()) {
+  <p class="field__error" role="alert">{{ errorMessage() }}</p>
+}
+
+@if (members() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (members() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'डेटा लोड नहीं हो सका।' : "Couldn't load staff." }}
+  </p>
+} @else {
+  @for (member of members(); track member.membershipId) {
+    <div
+      class="panel"
+      style="display: flex; justify-content: space-between; align-items: center; gap: var(--space-4)"
+    >
+      <div>
+        <p style="font-weight: var(--font-weight-semibold)">
+          {{ member.displayName }}
+          @if (member.isCurrentUser) {
+            <span style="color: var(--color-ink-700); font-weight: var(--font-weight-regular)">{{
+              language() === 'hi' ? ' (आप)' : ' (you)'
+            }}</span>
+          }
+        </p>
+        <p style="color: var(--color-ink-700); font-size: var(--font-size-sm)">
+          {{ member.identifier }}
+          @if (!member.verified) {
+            · {{ language() === 'hi' ? 'अपुष्ट' : 'unverified' }}
+          }
+        </p>
+      </div>
+
+      @if (isOwner() && !member.isCurrentUser) {
+        <div style="display: flex; align-items: center; gap: var(--space-3)">
+          <select
+            class="input"
+            style="width: auto"
+            [disabled]="actingOnId() === member.membershipId"
+            [value]="member.role"
+            (change)="changeRole(member, $any($event.target).value)"
+          >
+            <option value="owner">{{ language() === 'hi' ? 'मालिक' : 'Owner' }}</option>
+            <option value="staff">{{ language() === 'hi' ? 'स्टाफ' : 'Staff' }}</option>
+            <option value="viewer">{{ language() === 'hi' ? 'दर्शक' : 'Viewer' }}</option>
+          </select>
+          <button
+            type="button"
+            class="button button--secondary"
+            [disabled]="actingOnId() === member.membershipId"
+            (click)="remove(member)"
+          >
+            {{ language() === 'hi' ? 'हटाएँ' : 'Remove' }}
+          </button>
+        </div>
+      } @else {
+        <span class="status-pill">{{ member.role }}</span>
+      }
+    </div>
+  }
+}

@@ -58,6 +58,13 @@ export class AppShellComponent {
       icon: 'users',
     },
     { path: '/app/training', labelEn: 'Training', labelHi: 'प्रशिक्षण', icon: 'cap' },
+    { path: '/app/partner', labelEn: 'Partner portal', labelHi: 'पार्टनर पोर्टल', icon: 'briefcase' },
+    { path: '/app/evidence', labelEn: 'Evidence', labelHi: 'प्रमाण', icon: 'file' },
+    { path: '/app/checks', labelEn: 'Live checks', labelHi: 'लाइव जांच', icon: 'shield' },
+    { path: '/app/security', labelEn: 'Security', labelHi: 'सुरक्षा', icon: 'alert' },
+    { path: '/app/developers', labelEn: 'Developer API', labelHi: 'डेवलपर API', icon: 'database' },
+    { path: '/app/billing', labelEn: 'Plan and billing', labelHi: 'योजना और बिलिंग', icon: 'briefcase' },
+    { path: '/app/admin', labelEn: 'Platform admin', labelHi: 'प्लेटफ़ॉर्म एडमिन', icon: 'settings' },
     { path: '/app/settings', labelEn: 'Settings', labelHi: 'सेटिंग्स', icon: 'settings' },
   ];
 

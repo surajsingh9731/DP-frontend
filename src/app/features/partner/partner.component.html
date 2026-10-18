@@ -1,0 +1,145 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">{{ language() === 'hi' ? 'पार्टनर पोर्टल' : 'Partner portal' }}</h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'आपके सभी क्लाइंट संस्थान और कमीशन एक जगह।'
+          : 'Every client organisation and your commission, in one place.'
+      }}
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="button button--secondary" (click)="toggleProfileForm()">
+      {{
+        hasProfile()
+          ? language() === 'hi'
+            ? 'प्रोफ़ाइल संपादित करें'
+            : 'Edit profile'
+          : language() === 'hi'
+            ? 'प्रोफ़ाइल बनाएँ'
+            : 'Set up profile'
+      }}
+    </button>
+  </div>
+</div>
+
+@if (showProfileForm()) {
+  <div class="panel">
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" novalidate>
+      <div class="field">
+        <label class="field__label" for="brandName">{{
+          language() === 'hi' ? 'ब्रांड नाम' : 'Brand name'
+        }}</label>
+        <input id="brandName" class="input" type="text" formControlName="brandName" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="contactEmail">{{
+          language() === 'hi' ? 'संपर्क ईमेल' : 'Contact email'
+        }}</label>
+        <input id="contactEmail" class="input" type="email" formControlName="contactEmail" />
+      </div>
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+      <button type="submit" class="button button--primary" [disabled]="submitting()">
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'सहेजा जा रहा है…'
+              : 'Saving…'
+            : language() === 'hi'
+              ? 'सहेजें'
+              : 'Save'
+        }}
+      </button>
+    </form>
+  </div>
+} @else if (errorMessage()) {
+  <p class="field__error" role="alert">{{ errorMessage() }}</p>
+}
+
+<h2 style="font-size: var(--font-size-lg); margin: var(--space-8) 0 var(--space-4)">
+  {{ language() === 'hi' ? 'क्लाइंट संस्थान' : 'Client organisations' }}
+</h2>
+
+@if (organisations() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (organisations() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'लोड नहीं हो सका।' : "Couldn't load organisations." }}
+  </p>
+} @else if (organisations()!.length === 0) {
+  <div class="empty-state">
+    <div class="empty-state__icon">0</div>
+    <p>{{ language() === 'hi' ? 'अभी कोई क्लाइंट नहीं है।' : 'No client organisations yet.' }}</p>
+  </div>
+} @else {
+  @for (org of organisations(); track org.organisationId) {
+    <div class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <p style="font-weight: var(--font-weight-semibold)">{{ org.organisationName }}</p>
+        <span class="status-pill">{{ org.role }}</span>
+      </div>
+      @if (org.readiness.length > 0) {
+        <ul style="margin-top: var(--space-3); display: flex; gap: var(--space-2); flex-wrap: wrap; list-style: none; padding: 0">
+          @for (check of org.readiness; track check.id) {
+            <li class="status-pill" [class]="'status-pill--' + check.status">{{ check.title }}: {{ check.count }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+}
+
+<h2 style="font-size: var(--font-size-lg); margin: var(--space-8) 0 var(--space-4)">
+  {{ language() === 'hi' ? 'कमीशन' : 'Commissions' }}
+</h2>
+
+@if (commissions() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (commissions() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'लोड नहीं हो सका।' : "Couldn't load commissions." }}
+  </p>
+} @else if (commissions()!.length === 0) {
+  <div class="empty-state">
+    <div class="empty-state__icon">0</div>
+    <p>{{ language() === 'hi' ? 'अभी कोई कमीशन रिकॉर्ड नहीं है।' : 'No commission records yet.' }}</p>
+  </div>
+} @else {
+  @for (record of commissions(); track record.id) {
+    <div class="panel" style="display: flex; justify-content: space-between; align-items: center">
+      <div>
+        <p style="font-weight: var(--font-weight-semibold)">{{ record.organisationName }}</p>
+        <p style="color: var(--color-ink-700); font-size: var(--font-size-sm)">
+          ₹{{ record.amountInr }}
+          @if (record.note) {
+            · {{ record.note }}
+          }
+        </p>
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--space-3)">
+        <span class="status-pill" [class]="'status-pill--' + record.status">{{ record.status }}</span>
+        @if (record.status !== 'paid') {
+          <button
+            type="button"
+            class="button button--secondary"
+            [disabled]="actingOnId() === record.id"
+            (click)="advanceCommission(record)"
+          >
+            {{
+              record.status === 'pending'
+                ? language() === 'hi'
+                  ? 'पुष्टि करें'
+                  : 'Confirm'
+                : language() === 'hi'
+                  ? 'भुगतान के रूप में चिह्नित करें'
+                  : 'Mark paid'
+            }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+}

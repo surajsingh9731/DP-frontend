@@ -267,10 +267,31 @@
 // pattern of modern compliance-SaaS pages, but with honest product facts
 // rather than fabricated customer/usage numbers.
 .stats-band {
+  position: relative;
   margin: 0 calc(var(--space-4) * -1);
   padding: var(--space-10) var(--space-4);
-  background: var(--color-primary-900);
+  background:
+    radial-gradient(900px 260px at 12% -20%, rgba(255, 255, 255, 0.12) 0%, transparent 60%),
+    radial-gradient(700px 240px at 92% 120%, rgba(255, 255, 255, 0.08) 0%, transparent 55%),
+    linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-primary-700) 100%);
   border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.stats-band__grid > .stats-band__item:not(:last-child) {
+  @media (min-width: 40rem) {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 10%;
+      bottom: 10%;
+      right: calc(var(--space-8) * -1);
+      width: 1px;
+      background: rgba(255, 255, 255, 0.16);
+    }
+  }
 }
 
 .stats-band__grid {
@@ -455,7 +476,9 @@ $module-tones: (
   position: relative;
   margin: var(--space-10) calc(var(--space-4) * -1) var(--space-4);
   padding: var(--space-16) var(--space-6);
-  background: var(--color-primary-900);
+  background:
+    radial-gradient(900px 320px at 50% -30%, rgba(255, 255, 255, 0.14) 0%, transparent 60%),
+    linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-primary-700) 100%);
   border-radius: var(--radius-lg);
   color: #fff;
   text-align: center;

@@ -41,8 +41,8 @@ export class ApiClientService {
     return this.request<T>('PUT', path, body, headers);
   }
 
-  delete<T>(path: string, headers?: Record<string, string>): Observable<T> {
-    return this.request<T>('DELETE', path, undefined, headers);
+  delete<T>(path: string, body?: unknown, headers?: Record<string, string>): Observable<T> {
+    return this.request<T>('DELETE', path, body, headers);
   }
 
   private request<T>(

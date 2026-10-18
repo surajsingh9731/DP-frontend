@@ -1,0 +1,100 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">{{ language() === 'hi' ? 'सेटिंग्स' : 'Settings' }}</h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'संस्थान का नाम और संपर्क व्यक्ति, जो हर सूचना पर दिखता है।'
+          : 'Your organisation name and the contact person shown on every notice.'
+      }}
+    </p>
+  </div>
+</div>
+
+@if (settings() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (settings() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'सेटिंग्स लोड नहीं हो सकीं।' : "Couldn't load settings." }}
+  </p>
+} @else {
+  <div class="panel">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label class="field__label" for="organisationName">{{
+          language() === 'hi' ? 'संस्थान का नाम' : 'Organisation name'
+        }}</label>
+        <input id="organisationName" class="input" type="text" formControlName="organisationName" />
+      </div>
+
+      <h2 style="font-size: var(--font-size-lg); margin: var(--space-6) 0 var(--space-2)">
+        {{ language() === 'hi' ? 'संपर्क व्यक्ति' : 'Contact person' }}
+      </h2>
+      <p style="color: var(--color-ink-700); font-size: var(--font-size-sm); margin-bottom: var(--space-4)">
+        {{
+          language() === 'hi'
+            ? 'यह हर सूचना और जवाब पर दिखाया जाता है, जैसा कि कानून की आवश्यकता है।'
+            : 'This is published on every notice and reply, as the law requires (s.8(9)).'
+        }}
+      </p>
+
+      <div class="field">
+        <label class="field__label" for="contactName">{{
+          language() === 'hi' ? 'नाम' : 'Name'
+        }}</label>
+        <input id="contactName" class="input" type="text" formControlName="contactName" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="contactRole">{{
+          language() === 'hi' ? 'पद' : 'Role'
+        }}</label>
+        <input id="contactRole" class="input" type="text" formControlName="contactRole" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="contactPhone">{{
+          language() === 'hi' ? 'फ़ोन' : 'Phone'
+        }}</label>
+        <input id="contactPhone" class="input" type="text" formControlName="contactPhone" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="contactEmail">{{
+          language() === 'hi' ? 'ईमेल' : 'Email'
+        }}</label>
+        <input id="contactEmail" class="input" type="email" formControlName="contactEmail" />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+      @if (successMessage()) {
+        <p role="status" style="color: var(--color-success-700)">{{ successMessage() }}</p>
+      }
+
+      <button type="submit" class="button button--primary" [disabled]="submitting()">
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'सहेजा जा रहा है…'
+              : 'Saving…'
+            : language() === 'hi'
+              ? 'सहेजें'
+              : 'Save'
+        }}
+      </button>
+    </form>
+  </div>
+
+  @if (settings()!.branches.length > 0) {
+    <h2 style="font-size: var(--font-size-lg); margin: var(--space-8) 0 var(--space-4)">
+      {{ language() === 'hi' ? 'शाखाएँ' : 'Branches' }}
+    </h2>
+    @for (branch of settings()!.branches; track branch.id) {
+      <div class="panel" style="display: flex; justify-content: space-between; align-items: center">
+        <p>{{ branch.name }}</p>
+        @if (branch.isPrimary) {
+          <span class="status-pill">{{ language() === 'hi' ? 'मुख्य' : 'Primary' }}</span>
+        }
+      </div>
+    }
+  }
+}
