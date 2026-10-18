@@ -1,0 +1,137 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">{{ language() === 'hi' ? 'अनुरोध' : 'Requests' }}</h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'जब कोई अभिभावक अपने बच्चे की जानकारी के बारे में पूछता है, तो वह यहाँ आता है।'
+          : "When a parent asks to see, fix or delete their child's data, it lands here."
+      }}
+    </p>
+  </div>
+</div>
+
+@if (requests() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (requests() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'डेटा लोड नहीं हो सका।' : "Couldn't load requests." }}
+  </p>
+} @else if (requests()!.length === 0) {
+  <div class="empty-state">
+    <div class="empty-state__icon">0</div>
+    <p>{{ language() === 'hi' ? 'कोई खुला अनुरोध नहीं है।' : 'No open requests.' }}</p>
+  </div>
+} @else {
+  @for (request of requests(); track request.id) {
+    <div class="panel">
+      <button
+        type="button"
+        style="
+          display: flex;
+          width: 100%;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: var(--space-4);
+          background: none;
+          border: none;
+          padding: 0;
+          min-height: auto;
+          text-align: left;
+          cursor: pointer;
+          font: inherit;
+          color: inherit;
+        "
+        [attr.aria-expanded]="openRowId() === request.id"
+        (click)="toggleRow(request)"
+      >
+        <span>
+          <p style="font-weight: var(--font-weight-semibold); text-transform: capitalize">
+            {{ request.kind.replace('_', ' ') }}
+          </p>
+          <p style="color: var(--color-ink-700); font-size: var(--font-size-sm)">
+            {{ request.identifierMasked }} · {{ request.submittedAt | date: 'mediumDate' }}
+          </p>
+        </span>
+        <span class="status-pill" [class]="'status-pill--' + request.status">{{
+          request.status.replace('_', ' ')
+        }}</span>
+      </button>
+
+      @if (openRowId() === request.id) {
+        <div
+          style="
+            margin-top: var(--space-4);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--color-border);
+          "
+        >
+          <p style="margin-bottom: var(--space-4); white-space: pre-wrap">{{ request.details }}</p>
+
+          @if (request.autoAccessSummary) {
+            <div class="panel" style="background: var(--color-surface-alt); box-shadow: none">
+              <p style="white-space: pre-wrap; font-size: var(--font-size-sm)">
+                {{ request.autoAccessSummary }}
+              </p>
+            </div>
+          }
+
+          <div class="field">
+            <label class="field__label" for="status-{{ request.id }}">{{
+              language() === 'hi' ? 'स्थिति' : 'Status'
+            }}</label>
+            <select
+              id="status-{{ request.id }}"
+              class="select"
+              [ngModel]="responseStatus()"
+              (ngModelChange)="responseStatus.set($event)"
+            >
+              <option value="under_review">
+                {{ language() === 'hi' ? 'समीक्षा में' : 'Under review' }}
+              </option>
+              <option value="responded">
+                {{ language() === 'hi' ? 'जवाब दिया गया' : 'Responded' }}
+              </option>
+              <option value="closed">{{ language() === 'hi' ? 'बंद' : 'Closed' }}</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="response-{{ request.id }}">{{
+              language() === 'hi' ? 'जवाब' : 'Response'
+            }}</label>
+            <textarea
+              id="response-{{ request.id }}"
+              class="input"
+              rows="4"
+              style="min-height: auto; resize: vertical"
+              [ngModel]="responseText()"
+              (ngModelChange)="responseText.set($event)"
+            ></textarea>
+          </div>
+
+          @if (errorMessage()) {
+            <p class="field__error" role="alert">{{ errorMessage() }}</p>
+          }
+
+          <button
+            type="button"
+            class="button button--primary"
+            [disabled]="submitting()"
+            (click)="submit(request)"
+          >
+            {{
+              submitting()
+                ? language() === 'hi'
+                  ? 'भेजा जा रहा है…'
+                  : 'Sending…'
+                : language() === 'hi'
+                  ? 'जवाब भेजें'
+                  : 'Send response'
+            }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+}

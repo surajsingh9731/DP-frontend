@@ -6,6 +6,14 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { VerifyComponent } from './features/auth/verify/verify.component';
 import { AppShellComponent } from './core/layout/app-shell/app-shell.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { ConsentsComponent } from './features/consents/consents.component';
+import { RequestsComponent } from './features/requests/requests.component';
+import { RegisterComponent } from './features/register/register.component';
+import { NoticesComponent } from './features/notices/notices.component';
+import { BreachComponent } from './features/breach/breach.component';
+import { RetentionComponent } from './features/retention/retention.component';
+import { VendorsComponent } from './features/vendors/vendors.component';
+import { TrainingComponent } from './features/training/training.component';
 import { AppComingSoonComponent } from './features/app-coming-soon/app-coming-soon.component';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -14,6 +22,10 @@ import { authGuard } from './core/guards/auth.guard';
  * authenticated app shell behind `authGuard`. Each gets its own wildcard
  * redirect inside its own children array — a single top-level wildcard
  * would otherwise swallow `/app/**` before the guarded group ever runs.
+ *
+ * `staff` and `settings` still route to AppComingSoonComponent: there is
+ * no backend API yet for listing/inviting staff or editing organisation
+ * settings, so there is nothing real for those pages to show.
  */
 export const routes: Routes = [
   {
@@ -22,59 +34,19 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', component: DashboardComponent, title: 'Dashboard — Sahmati' },
-      {
-        path: 'consents',
-        component: AppComingSoonComponent,
-        data: { titleEn: 'Consents', titleHi: 'सहमति' },
-        title: 'Consents — Sahmati',
-      },
-      {
-        path: 'requests',
-        component: AppComingSoonComponent,
-        data: { titleEn: 'Requests', titleHi: 'अनुरोध' },
-        title: 'Requests — Sahmati',
-      },
-      {
-        path: 'data-register',
-        component: AppComingSoonComponent,
-        data: { titleEn: 'Data list', titleHi: 'डेटा सूची' },
-        title: 'Data list — Sahmati',
-      },
-      {
-        path: 'notices',
-        component: AppComingSoonComponent,
-        data: { titleEn: 'Privacy notice', titleHi: 'गोपनीयता सूचना' },
-        title: 'Privacy notice — Sahmati',
-      },
-      {
-        path: 'breach',
-        component: AppComingSoonComponent,
-        data: { titleEn: 'Data leaks', titleHi: 'डेटा लीक' },
-        title: 'Data leaks — Sahmati',
-      },
-      {
-        path: 'retention',
-        component: AppComingSoonComponent,
-        data: { titleEn: 'Keep and delete', titleHi: 'रखें और हटाएँ' },
-        title: 'Keep and delete — Sahmati',
-      },
-      {
-        path: 'vendors',
-        component: AppComingSoonComponent,
-        data: { titleEn: 'Vendors', titleHi: 'वेंडर' },
-        title: 'Vendors — Sahmati',
-      },
+      { path: 'consents', component: ConsentsComponent, title: 'Consents — Sahmati' },
+      { path: 'requests', component: RequestsComponent, title: 'Requests — Sahmati' },
+      { path: 'data-register', component: RegisterComponent, title: 'Data list — Sahmati' },
+      { path: 'notices', component: NoticesComponent, title: 'Privacy notice — Sahmati' },
+      { path: 'breach', component: BreachComponent, title: 'Data leaks — Sahmati' },
+      { path: 'retention', component: RetentionComponent, title: 'Keep and delete — Sahmati' },
+      { path: 'vendors', component: VendorsComponent, title: 'Vendors — Sahmati' },
+      { path: 'training', component: TrainingComponent, title: 'Training — Sahmati' },
       {
         path: 'staff',
         component: AppComingSoonComponent,
         data: { titleEn: 'Staff and activity', titleHi: 'स्टाफ और गतिविधि' },
         title: 'Staff and activity — Sahmati',
-      },
-      {
-        path: 'training',
-        component: AppComingSoonComponent,
-        data: { titleEn: 'Training', titleHi: 'प्रशिक्षण' },
-        title: 'Training — Sahmati',
       },
       {
         path: 'settings',

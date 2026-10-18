@@ -1,0 +1,123 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">{{ language() === 'hi' ? 'वेंडर' : 'Vendors' }}</h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'जो कंपनियाँ आपके लिए आपका डेटा संभालती हैं।'
+          : 'Companies that handle your data for you.'
+      }}
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="button button--primary" (click)="toggleForm()">
+      {{
+        showForm()
+          ? language() === 'hi'
+            ? 'रद्द करें'
+            : 'Cancel'
+          : language() === 'hi'
+            ? 'वेंडर जोड़ें'
+            : 'Add a vendor'
+      }}
+    </button>
+  </div>
+</div>
+
+@if (showForm()) {
+  <div class="panel">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label class="field__label" for="name">{{ language() === 'hi' ? 'नाम' : 'Name' }}</label>
+        <input id="name" class="input" type="text" formControlName="name" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="serviceDescription">{{
+          language() === 'hi' ? 'सेवा' : 'Service'
+        }}</label>
+        <input
+          id="serviceDescription"
+          class="input"
+          type="text"
+          formControlName="serviceDescription"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="contactEmail">{{
+          language() === 'hi' ? 'संपर्क ईमेल' : 'Contact email'
+        }}</label>
+        <input id="contactEmail" class="input" type="email" formControlName="contactEmail" />
+      </div>
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+      <button type="submit" class="button button--primary" [disabled]="submitting()">
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'जोड़ा जा रहा है…'
+              : 'Adding…'
+            : language() === 'hi'
+              ? 'जोड़ें'
+              : 'Add vendor'
+        }}
+      </button>
+    </form>
+  </div>
+}
+
+@if (vendors() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (vendors() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'डेटा लोड नहीं हो सका।' : "Couldn't load vendors." }}
+  </p>
+} @else if (vendors()!.length === 0) {
+  <div class="empty-state">
+    <div class="empty-state__icon">0</div>
+    <p>{{ language() === 'hi' ? 'अभी कोई वेंडर नहीं है।' : 'No vendors yet.' }}</p>
+  </div>
+} @else {
+  @for (vendor of vendors(); track vendor.id) {
+    <div
+      class="panel"
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: var(--space-4);
+      "
+    >
+      <div>
+        <p style="font-weight: var(--font-weight-semibold)">{{ vendor.name }}</p>
+        <p style="color: var(--color-ink-700); font-size: var(--font-size-sm)">
+          {{ vendor.serviceDescription }}
+        </p>
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--space-3)">
+        <span class="status-pill" [class]="'status-pill--' + vendor.agreementStatus">{{
+          vendor.agreementStatus.replace('_', ' ')
+        }}</span>
+        @if (vendor.agreementStatus === 'not_sent') {
+          <button
+            type="button"
+            class="button button--secondary"
+            [disabled]="actingOnId() === vendor.id"
+            (click)="sendAgreement(vendor)"
+          >
+            {{ language() === 'hi' ? 'भेजें' : 'Send' }}
+          </button>
+        } @else if (vendor.agreementStatus === 'sent') {
+          <button
+            type="button"
+            class="button button--secondary"
+            [disabled]="actingOnId() === vendor.id"
+            (click)="markSigned(vendor)"
+          >
+            {{ language() === 'hi' ? 'हस्ताक्षरित के रूप में चिह्नित करें' : 'Mark signed' }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+}

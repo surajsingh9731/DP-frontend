@@ -1,0 +1,142 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">{{ language() === 'hi' ? 'प्रशिक्षण' : 'Training' }}</h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'छोटे पाठ, हिंदी और अंग्रेज़ी में।'
+          : 'Short lessons, in Hindi and English.'
+      }}
+    </p>
+  </div>
+</div>
+
+@if (!activeLesson()) {
+  @if (lessons() === undefined) {
+    <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+  } @else if (lessons() === null) {
+    <p class="field__error" role="alert">
+      {{ language() === 'hi' ? 'डेटा लोड नहीं हो सका।' : "Couldn't load lessons." }}
+    </p>
+  } @else {
+    @for (lesson of lessons(); track lesson.code) {
+      <button
+        type="button"
+        class="panel"
+        style="
+          display: flex;
+          width: 100%;
+          justify-content: space-between;
+          align-items: center;
+          gap: var(--space-4);
+          cursor: pointer;
+          text-align: left;
+          font: inherit;
+          color: inherit;
+          min-height: auto;
+        "
+        (click)="openLesson(lesson.code)"
+      >
+        <span>
+          <p style="font-weight: var(--font-weight-semibold)">{{ lesson.title[language()] }}</p>
+          <p style="color: var(--color-ink-700); font-size: var(--font-size-sm)">
+            {{ lesson.summary[language()] }}
+          </p>
+        </span>
+        <span
+          class="status-pill"
+          [class]="
+            'status-pill--' +
+            (lesson.status === 'completed'
+              ? 'ok'
+              : lesson.status === 'in_progress'
+                ? 'warning'
+                : 'neutral')
+          "
+        >
+          {{ lesson.status.replace('_', ' ') }}
+        </span>
+      </button>
+    }
+  }
+} @else {
+  <div class="panel">
+    <button
+      type="button"
+      class="button button--secondary"
+      style="margin-bottom: var(--space-4)"
+      (click)="closeLesson()"
+    >
+      {{ language() === 'hi' ? '← वापस' : '← Back' }}
+    </button>
+
+    <h2 style="margin-bottom: var(--space-4)">{{ activeLesson()!.title[language()] }}</h2>
+    <p style="white-space: pre-wrap; margin-bottom: var(--space-8)">
+      {{ activeLesson()!.content[language()] }}
+    </p>
+
+    @if (result()) {
+      <div
+        class="panel"
+        [style.background]="
+          result()!.passed ? 'var(--color-success-100)' : 'var(--color-danger-100)'
+        "
+        style="box-shadow: none"
+      >
+        <p style="font-weight: var(--font-weight-semibold)">
+          {{
+            result()!.passed
+              ? (language() === 'hi' ? 'पास हो गए! स्कोर: ' : 'Passed! Score: ') +
+                result()!.score +
+                '%'
+              : (language() === 'hi' ? 'दोबारा कोशिश करें। स्कोर: ' : 'Try again. Score: ') +
+                result()!.score +
+                '%'
+          }}
+        </p>
+      </div>
+    } @else {
+      <h3 style="margin-bottom: var(--space-4)">{{ language() === 'hi' ? 'क्विज़' : 'Quiz' }}</h3>
+      @for (question of activeLesson()!.quiz; track question.id; let qi = $index) {
+        <div class="field">
+          <span class="field__label">{{ question.prompt[language()] }}</span>
+          @for (option of question.options; track $index; let oi = $index) {
+            <label class="option-card">
+              <input
+                class="option-card__input"
+                type="radio"
+                [name]="'q' + qi"
+                [checked]="answers()[qi] === oi"
+                (change)="setAnswer(qi, oi)"
+              />
+              <span class="option-card__body">
+                <span class="option-card__title">{{ option[language()] }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button
+        type="button"
+        class="button button--primary"
+        [disabled]="submitting()"
+        (click)="submitQuiz()"
+      >
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'जाँचा जा रहा है…'
+              : 'Checking…'
+            : language() === 'hi'
+              ? 'जमा करें'
+              : 'Submit'
+        }}
+      </button>
+    }
+  </div>
+}

@@ -1,0 +1,98 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">
+      {{ language() === 'hi' ? 'गोपनीयता सूचना' : 'Privacy notice' }}
+    </h1>
+    <p class="page-header__subtitle">
+      {{ language() === 'hi' ? 'आपकी डेटा सूची से बनाई गई।' : 'Built from your data list.' }}
+    </p>
+  </div>
+  @if (notice()) {
+    <div class="page-header__actions">
+      <button
+        type="button"
+        class="button button--primary"
+        (click)="publish()"
+        [disabled]="publishing()"
+      >
+        {{
+          publishing()
+            ? language() === 'hi'
+              ? 'प्रकाशित हो रहा है…'
+              : 'Publishing…'
+            : language() === 'hi'
+              ? 'नया संस्करण प्रकाशित करें'
+              : 'Publish new version'
+        }}
+      </button>
+    </div>
+  }
+</div>
+
+@if (notice() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (notice() === null) {
+  <div class="empty-state">
+    <div class="empty-state__icon">i</div>
+    <p>
+      {{
+        language() === 'hi'
+          ? 'अभी कोई सार्वजनिक गोपनीयता सूचना प्रकाशित नहीं है।'
+          : 'No public privacy notice is published yet.'
+      }}
+    </p>
+    <button
+      type="button"
+      class="button button--primary"
+      (click)="publish()"
+      [disabled]="publishing()"
+    >
+      {{
+        publishing()
+          ? language() === 'hi'
+            ? 'प्रकाशित हो रहा है…'
+            : 'Publishing…'
+          : language() === 'hi'
+            ? 'मेरी गोपनीयता सूचना बनाएँ'
+            : 'Create my privacy notice'
+      }}
+    </button>
+    @if (errorMessage()) {
+      <p class="field__error" role="alert">{{ errorMessage() }}</p>
+    }
+  </div>
+} @else {
+  <div class="detail-card">
+    <div class="detail-row">
+      <span class="detail-row__label">{{ language() === 'hi' ? 'स्थिति' : 'Status' }}</span>
+      <span class="detail-row__value">
+        <span class="status-pill" [class]="'status-pill--' + notice()!.status">{{
+          notice()!.status
+        }}</span>
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-row__label">{{ language() === 'hi' ? 'संस्करण' : 'Version' }}</span>
+      <span class="detail-row__value">{{ notice()!.version }}</span>
+    </div>
+    @if (notice()!.publishedAt) {
+      <div class="detail-row">
+        <span class="detail-row__label">{{ language() === 'hi' ? 'प्रकाशित' : 'Published' }}</span>
+        <span class="detail-row__value">{{ notice()!.publishedAt | date: 'medium' }}</span>
+      </div>
+    }
+  </div>
+
+  @if (errorMessage()) {
+    <p class="field__error" role="alert" style="margin-top: var(--space-4)">{{ errorMessage() }}</p>
+  }
+
+  <div class="panel" style="margin-top: var(--space-6)">
+    <h2 style="margin-bottom: var(--space-2)">
+      {{ language() === 'hi' ? notice()!.titleHi : notice()!.titleEn }}
+    </h2>
+    <p style="white-space: pre-wrap">
+      {{ language() === 'hi' ? notice()!.bodyHi : notice()!.bodyEn }}
+    </p>
+  </div>
+}

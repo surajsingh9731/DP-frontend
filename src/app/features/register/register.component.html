@@ -1,0 +1,178 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">{{ language() === 'hi' ? 'डेटा सूची' : 'Data list' }}</h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'आप क्या इकट्ठा करते हैं, क्यों और कितने समय के लिए।'
+          : 'What you collect, why, and for how long.'
+      }}
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="button button--primary" (click)="toggleForm()">
+      {{
+        showForm()
+          ? language() === 'hi'
+            ? 'रद्द करें'
+            : 'Cancel'
+          : language() === 'hi'
+            ? 'डेटा प्रकार जोड़ें'
+            : 'Add a data type'
+      }}
+    </button>
+  </div>
+</div>
+
+@if (showForm()) {
+  <div class="panel">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label class="field__label" for="categoryCode">{{
+          language() === 'hi' ? 'श्रेणी' : 'Category'
+        }}</label>
+        <select
+          id="categoryCode"
+          class="select"
+          formControlName="categoryCode"
+          (change)="onCategoryChange(form.controls.categoryCode.value)"
+        >
+          <option value="" disabled>{{ language() === 'hi' ? 'चुनें' : 'Choose one' }}</option>
+          @for (category of context()?.dataCategories; track category.code) {
+            <option [value]="category.code">{{ category.label[language()] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="purposeEn">{{
+          language() === 'hi' ? 'उद्देश्य (अंग्रेज़ी)' : 'Purpose (English)'
+        }}</label>
+        <input id="purposeEn" class="input" type="text" formControlName="purposeEn" />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="purposeHi">{{
+          language() === 'hi' ? 'उद्देश्य (हिंदी)' : 'Purpose (Hindi)'
+        }}</label>
+        <input id="purposeHi" class="input" type="text" formControlName="purposeHi" />
+      </div>
+
+      <div class="field">
+        <span class="field__label">{{ language() === 'hi' ? 'कानूनी आधार' : 'Legal basis' }}</span>
+        <label class="option-card">
+          <input
+            class="option-card__input"
+            type="radio"
+            formControlName="legalBasis"
+            value="consent"
+          />
+          <span class="option-card__body">
+            <span class="option-card__title">{{ language() === 'hi' ? 'सहमति' : 'Consent' }}</span>
+          </span>
+        </label>
+        <label class="option-card">
+          <input
+            class="option-card__input"
+            type="radio"
+            formControlName="legalBasis"
+            value="legitimate_use"
+          />
+          <span class="option-card__body">
+            <span class="option-card__title">{{
+              language() === 'hi' ? 'वैध उपयोग' : 'Legitimate use'
+            }}</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="retentionDays">{{
+          language() === 'hi' ? 'कितने दिन रखें' : 'Retention (days)'
+        }}</label>
+        <input
+          id="retentionDays"
+          class="input"
+          type="number"
+          min="1"
+          formControlName="retentionDays"
+        />
+      </div>
+
+      <div class="field">
+        <label class="option-card">
+          <input class="option-card__input" type="checkbox" formControlName="hasPaperRecords" />
+          <span class="option-card__body">
+            <span class="option-card__title">{{
+              language() === 'hi' ? 'कागज़ी रिकॉर्ड भी हैं' : 'Paper records exist too'
+            }}</span>
+          </span>
+        </label>
+      </div>
+
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" class="button button--primary" [disabled]="submitting()">
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'सहेजा जा रहा है…'
+              : 'Saving…'
+            : language() === 'hi'
+              ? 'सहेजें'
+              : 'Save'
+        }}
+      </button>
+    </form>
+  </div>
+}
+
+@if (entries() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (entries() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'डेटा लोड नहीं हो सका।' : "Couldn't load your data list." }}
+  </p>
+} @else if (entries()!.length === 0) {
+  <div class="empty-state">
+    <div class="empty-state__icon">!</div>
+    <p>
+      {{
+        language() === 'hi' ? 'अभी कोई डेटा प्रकार दर्ज नहीं है।' : 'No data types recorded yet.'
+      }}
+    </p>
+  </div>
+} @else {
+  <div class="list-table-wrap">
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th>{{ language() === 'hi' ? 'श्रेणी' : 'Category' }}</th>
+          <th>{{ language() === 'hi' ? 'उद्देश्य' : 'Purpose' }}</th>
+          <th>{{ language() === 'hi' ? 'आधार' : 'Basis' }}</th>
+          <th>{{ language() === 'hi' ? 'रखें' : 'Keep for' }}</th>
+          <th>{{ language() === 'hi' ? 'स्थिति' : 'Status' }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (entry of entries(); track entry.id) {
+          <tr>
+            <td>{{ entry.categoryLabel[language()] }}</td>
+            <td>{{ language() === 'hi' ? entry.purposeHi : entry.purposeEn }}</td>
+            <td>
+              <span class="status-pill">{{ entry.legalBasis.replace('_', ' ') }}</span>
+            </td>
+            <td>{{ entry.retentionDays }} {{ language() === 'hi' ? 'दिन' : 'days' }}</td>
+            <td>
+              <span class="status-pill" [class]="'status-pill--' + entry.status">{{
+                entry.status
+              }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

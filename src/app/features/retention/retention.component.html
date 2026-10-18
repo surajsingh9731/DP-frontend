@@ -1,0 +1,141 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">
+      {{ language() === 'hi' ? 'रखें और हटाएँ' : 'Keep and delete' }}
+    </h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'जो रिकॉर्ड अपनी रखें-तक-तारीख पार कर चुके हैं।'
+          : 'Records past their keep-until date.'
+      }}
+    </p>
+  </div>
+</div>
+
+@if (preview() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (preview() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'डेटा लोड नहीं हो सका।' : "Couldn't load retention data." }}
+  </p>
+} @else if (preview()!.length === 0) {
+  <div class="empty-state">
+    <div class="empty-state__icon">✓</div>
+    <p>
+      {{
+        language() === 'hi'
+          ? 'अभी कुछ भी हटाने के लिए देय नहीं है।'
+          : 'Nothing is currently due for erasure.'
+      }}
+    </p>
+  </div>
+} @else {
+  <div class="list-table-wrap">
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th>{{ language() === 'hi' ? 'उद्देश्य' : 'Purpose' }}</th>
+          <th>{{ language() === 'hi' ? 'देय तिथि' : 'Due' }}</th>
+          <th>{{ language() === 'hi' ? 'स्थिति' : 'Status' }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of preview(); track item.registerEntryId) {
+          <tr>
+            <td>{{ item.purposeEn }}</td>
+            <td>{{ item.dueAt | date: 'mediumDate' }}</td>
+            <td>
+              @if (item.onHold) {
+                <span class="status-pill status-pill--warning">{{
+                  language() === 'hi' ? 'होल्ड पर' : 'On hold'
+                }}</span>
+              } @else if (item.overdue) {
+                <span class="status-pill status-pill--danger">{{
+                  language() === 'hi' ? 'अतिदेय' : 'Overdue'
+                }}</span>
+              } @else {
+                <span class="status-pill status-pill--ok">{{
+                  language() === 'hi' ? 'समय पर' : 'On track'
+                }}</span>
+              }
+            </td>
+            <td>
+              @if (!item.onHold) {
+                <button
+                  type="button"
+                  class="button button--secondary"
+                  style="padding: var(--space-1) var(--space-3); min-height: auto"
+                  (click)="openAction(item, 'hold')"
+                >
+                  {{ language() === 'hi' ? 'होल्ड लगाएँ' : 'Place hold' }}
+                </button>
+                <button
+                  type="button"
+                  class="button button--secondary"
+                  style="padding: var(--space-1) var(--space-3); min-height: auto"
+                  (click)="openAction(item, 'erase')"
+                >
+                  {{ language() === 'hi' ? 'मिटाएँ' : 'Erase' }}
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (activeItem() && activeAction()) {
+  <div class="panel" style="margin-top: var(--space-6)">
+    <h2 style="margin-bottom: var(--space-2)">
+      {{
+        activeAction() === 'hold'
+          ? language() === 'hi'
+            ? 'होल्ड का कारण'
+            : 'Reason for the hold'
+          : language() === 'hi'
+            ? 'मिटाने का नोट'
+            : 'Erasure note'
+      }}
+    </h2>
+    <p style="color: var(--color-ink-700); margin-bottom: var(--space-4)">
+      {{ activeItem()!.purposeEn }}
+    </p>
+    <div class="field">
+      <textarea
+        class="input"
+        rows="3"
+        style="min-height: auto; resize: vertical"
+        [ngModel]="noteText()"
+        (ngModelChange)="noteText.set($event)"
+      ></textarea>
+    </div>
+    @if (errorMessage()) {
+      <p class="field__error" role="alert">{{ errorMessage() }}</p>
+    }
+    <div style="display: flex; gap: var(--space-3)">
+      <button
+        type="button"
+        class="button button--primary"
+        [disabled]="submitting()"
+        (click)="confirm()"
+      >
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'भेजा जा रहा है…'
+              : 'Submitting…'
+            : language() === 'hi'
+              ? 'पुष्टि करें'
+              : 'Confirm'
+        }}
+      </button>
+      <button type="button" class="button button--secondary" (click)="closeAction()">
+        {{ language() === 'hi' ? 'रद्द करें' : 'Cancel' }}
+      </button>
+    </div>
+  </div>
+}

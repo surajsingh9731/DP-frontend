@@ -1,0 +1,145 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">{{ language() === 'hi' ? 'डेटा लीक' : 'Data leaks' }}</h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'जो हुआ उसे चुनें, हम अगला कदम बताएँगे।'
+          : 'What happened, and what to do next.'
+      }}
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="button button--primary" (click)="toggleForm()">
+      {{
+        showForm()
+          ? language() === 'hi'
+            ? 'रद्द करें'
+            : 'Cancel'
+          : language() === 'hi'
+            ? 'लीक की रिपोर्ट करें'
+            : 'Report a leak'
+      }}
+    </button>
+  </div>
+</div>
+
+@if (showForm()) {
+  <div class="panel">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label class="field__label" for="title">{{
+          language() === 'hi' ? 'शीर्षक' : 'Title'
+        }}</label>
+        <input id="title" class="input" type="text" formControlName="title" />
+      </div>
+      <div class="field">
+        <label class="field__label" for="description">{{
+          language() === 'hi' ? 'विवरण' : 'What happened'
+        }}</label>
+        <textarea
+          id="description"
+          class="input"
+          rows="4"
+          style="min-height: auto; resize: vertical"
+          formControlName="description"
+        ></textarea>
+      </div>
+      <div class="field">
+        <label class="field__label" for="discoveredAt">{{
+          language() === 'hi' ? 'कब पता चला' : 'Discovered at'
+        }}</label>
+        <input
+          id="discoveredAt"
+          class="input"
+          type="datetime-local"
+          formControlName="discoveredAt"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="severity">{{
+          language() === 'hi' ? 'गंभीरता' : 'Severity'
+        }}</label>
+        <select id="severity" class="select" formControlName="severity">
+          <option value="low">{{ language() === 'hi' ? 'कम' : 'Low' }}</option>
+          <option value="medium">{{ language() === 'hi' ? 'मध्यम' : 'Medium' }}</option>
+          <option value="high">{{ language() === 'hi' ? 'उच्च' : 'High' }}</option>
+          <option value="critical">{{ language() === 'hi' ? 'गंभीर' : 'Critical' }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field__label" for="affectedDataCategories">{{
+          language() === 'hi'
+            ? 'प्रभावित डेटा श्रेणियाँ (अल्पविराम से अलग)'
+            : 'Affected data categories (comma-separated)'
+        }}</label>
+        <input
+          id="affectedDataCategories"
+          class="input"
+          type="text"
+          formControlName="affectedDataCategories"
+        />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="field__error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" class="button button--primary" [disabled]="submitting()">
+        {{
+          submitting()
+            ? language() === 'hi'
+              ? 'दर्ज हो रहा है…'
+              : 'Reporting…'
+            : language() === 'hi'
+              ? 'दर्ज करें'
+              : 'Report incident'
+        }}
+      </button>
+    </form>
+  </div>
+}
+
+@if (incidents() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (incidents() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'डेटा लोड नहीं हो सका।' : "Couldn't load incidents." }}
+  </p>
+} @else if (incidents()!.length === 0) {
+  <div class="empty-state">
+    <div class="empty-state__icon">0</div>
+    <p>{{ language() === 'hi' ? 'कोई खुला घटना नहीं है।' : 'No open incidents.' }}</p>
+  </div>
+} @else {
+  <div class="list-table-wrap">
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th>{{ language() === 'hi' ? 'शीर्षक' : 'Title' }}</th>
+          <th>{{ language() === 'hi' ? 'गंभीरता' : 'Severity' }}</th>
+          <th>{{ language() === 'hi' ? 'स्थिति' : 'Status' }}</th>
+          <th>{{ language() === 'hi' ? 'पता चला' : 'Discovered' }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (incident of incidents(); track incident.id) {
+          <tr>
+            <td>{{ incident.title }}</td>
+            <td>
+              <span class="status-pill" [class]="'status-pill--' + incident.severity">{{
+                incident.severity
+              }}</span>
+            </td>
+            <td>
+              <span class="status-pill" [class]="'status-pill--' + incident.status">{{
+                incident.status.replace('_', ' ')
+              }}</span>
+            </td>
+            <td>{{ incident.discoveredAt | date: 'medium' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

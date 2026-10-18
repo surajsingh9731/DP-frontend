@@ -1,0 +1,94 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-header__title">
+      {{ language() === 'hi' ? 'सहमति रिकॉर्ड' : 'Consent records' }}
+    </h1>
+    <p class="page-header__subtitle">
+      {{
+        language() === 'hi'
+          ? 'हर दर्ज की गई या वापस ली गई सहमति की वास्तविक रसीद।'
+          : 'Every real receipt of consent given or withdrawn.'
+      }}
+    </p>
+  </div>
+</div>
+
+<div class="tab-row" role="tablist">
+  <button
+    type="button"
+    class="tab-chip"
+    [attr.aria-pressed]="filter() === 'all'"
+    (click)="setFilter('all')"
+  >
+    {{ language() === 'hi' ? 'सभी' : 'All' }}
+  </button>
+  <button
+    type="button"
+    class="tab-chip"
+    [attr.aria-pressed]="filter() === 'choices_recorded'"
+    (click)="setFilter('choices_recorded')"
+  >
+    {{ language() === 'hi' ? 'दी गई' : 'Given' }}
+  </button>
+  <button
+    type="button"
+    class="tab-chip"
+    [attr.aria-pressed]="filter() === 'choices_withdrawn'"
+    (click)="setFilter('choices_withdrawn')"
+  >
+    {{ language() === 'hi' ? 'वापस ली गई' : 'Withdrawn' }}
+  </button>
+</div>
+
+@if (items() === undefined) {
+  <p>{{ language() === 'hi' ? 'लोड हो रहा है…' : 'Loading…' }}</p>
+} @else if (items() === null) {
+  <p class="field__error" role="alert">
+    {{ language() === 'hi' ? 'डेटा लोड नहीं हो सका।' : "Couldn't load consent records." }}
+  </p>
+} @else if (items()!.length === 0) {
+  <div class="empty-state">
+    <div class="empty-state__icon">0</div>
+    <p>{{ language() === 'hi' ? 'अभी कोई सहमति रिकॉर्ड नहीं है।' : 'No consent records yet.' }}</p>
+  </div>
+} @else {
+  <div class="list-table-wrap">
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th>{{ language() === 'hi' ? 'पहचान' : 'Identifier' }}</th>
+          <th>{{ language() === 'hi' ? 'प्रकार' : 'Kind' }}</th>
+          <th>{{ language() === 'hi' ? 'चुनाव' : 'Choices' }}</th>
+          <th>{{ language() === 'hi' ? 'समय' : 'When' }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.id) {
+          <tr>
+            <td>{{ item.identifierMasked }}</td>
+            <td>
+              <span
+                class="status-pill"
+                [class]="
+                  'status-pill--' + (item.kind === 'choices_recorded' ? 'given' : 'withdrawn')
+                "
+              >
+                {{
+                  item.kind === 'choices_recorded'
+                    ? language() === 'hi'
+                      ? 'दी गई'
+                      : 'Given'
+                    : language() === 'hi'
+                      ? 'वापस ली गई'
+                      : 'Withdrawn'
+                }}
+              </span>
+            </td>
+            <td>{{ item.choices.length }} {{ language() === 'hi' ? 'विकल्प' : 'purposes' }}</td>
+            <td>{{ item.occurredAt | date: 'medium' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
